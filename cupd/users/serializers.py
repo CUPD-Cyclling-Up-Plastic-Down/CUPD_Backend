@@ -2,6 +2,10 @@ import re
 from rest_framework import serializers
 from users.models import User
 from django.core.exceptions import ValidationError
+from ecoprograms.serializers import EcoprogramSerializer, EcoprogramApplySerializer
+from ecoprograms.models import Ecoprogram
+from upcyclings.models import UpcyclingCompany
+from upcyclings.serializers import UpcyclingCompanyEnrollSerializer
 
 
 # 회원가입
@@ -54,27 +58,82 @@ class SignUpSerializer(serializers.ModelSerializer):
         return user
 
 
-#  마이페이지 프로필 정보 불러오기
+# 마이페이지
 
-class MypageInfoSerializer(serializers.ModelSerializer): # 수정 필요
-    ecoprogram_likes = MypageWorkshopLikeSerializer(many=True)
-    ecoprogram_host = WorkshopSerializer(many=True)
-    ecoprogram_apply_guest = WorkshopApplySerializer(many=True)
+class MypageEcoprogramLikeSerializer(serializers.ModelSerializer):  # (소비자): 좋아요 한 에코프로그램
+    location = serializers.SerializerMethodField()
+    
+    def get_location(self, obj):
+        return obj.location.district
+    
+    class Meta:
+        model = Ecoprogram
+        fields = ( 'pk', 'title', 'ecoprogram_image', 'location', 'address2',)
+
+
+class MypageEcoprogramAppliedSerializer(serializers.ModelSerializer): # (소비자): 신청한 에코프로그램
+    
+    class Meta:
+        model = Ecoprogram
+        fields = ('title', 'due_date', 'result', 'created_at', 'updated_at')
+
+
+class MypageEcoprogramConfirmedSerializer(serializers.ModelSerializer): # (소비자): 참여확정된 에코프로그램
+    
+    class Meta:
+        model = Ecoprogram
+        fields = ('title', 'due_date', 'result', 'created_at', 'updated_at')
+
+
+class MypageConInfoSerializer(serializers.ModelSerializer): # (소비자): 프로필 정보 불러오기
+    ecoprogram_likes = MypageEcoprogramLikeSerializer(many=True)
+    ecoprogram_apply_guest = EcoprogramApplySerializer(many=True)
+
     class Meta:
         model = User
-        fields = ('nickname', 'email', 'profile_image', 'workshop_likes', 'hobby', 'workshop_host', 'workshop_apply_guest')
+        fields = ('nickname', 'email', 'profile_image', 'ecoprogram_likes', 'ecoprogram_host', 'ecoprogram_apply_guest')
 
 
-#  개인 프로필정보 수정
+class MypageEcoprogramCreatedSerializer(serializers.ModelSerializer): # (환경단체): 생성한 에코프로그램
+    
+    class Meta:
+        model = Ecoprogram
+        fields = ('title', 'due_date', 'result', 'created_at', 'updated_at', 'participant', 'max_guest')
 
-class MypageChangeInfoSerializer(serializers.ModelSerializer):
+
+class MypageEcoprogramApproveRejectionSerializer(serializers.ModelSerializer): # (환경단체): 에코프로그램별 사용자 승인/거절 여부 결정
+    ecoprogram_apply_guest = EcoprogramApplySerializer(many=True)
+
+    class Meta:
+        model = User
+        fields = ('ecoprogram_apply_guest')
+
+
+class MypageEcoprogramCompanyAdminSerializer(serializers.ModelSerializer): # (환경단체): 업체 등록 관리
+
+    class Meta:
+        model = UpcyclingCompany
+        fields = ('company',)
+
+
+class MypageOrgInfoSerializer(serializers.ModelSerializer): # (환경단체): 프로필 정보 불러오기
+    ecoprogram_host = EcoprogramSerializer(many=True)
+    ecoprogram_create = MypageEcoprogramCreatedSerializer(many=True)
+    upcyclingcompany_registrant = UpcyclingCompanyEnrollSerializer(many=True)
+    
+    class Meta:
+        model = User
+        fields = ('nickname', 'email', 'profile_image', 'ecoprogram_host', 'ecoprogram_create', 'upcyclingcompany_registrant')
+
+
+class MypageChangeInfoSerializer(serializers.ModelSerializer): # (소비자, 환경단체): 마이페이지 프로필 정보 수정
     password = serializers.CharField(write_only=True, required=True)
     password2 = serializers.CharField(write_only=True, required=True)
     old_password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ('old_password', 'password', 'password_check')
+        fields = ('email', 'nickname', 'old_password', 'password', 'password_check')
 
     def validate_email(self, data):
         email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')

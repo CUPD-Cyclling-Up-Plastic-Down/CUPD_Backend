@@ -20,11 +20,13 @@ class Ecoprogram(models.Model):
     likes = models.ManyToManyField(User, related_name='ecoprogram_likes', blank=True)
     views = models.BigIntegerField(default=0)
     organization = models.CharField(max_length=20)
-    date = models.DateTimeField()
+    due_date = models.DateTimeField()
     cost = models.PositiveIntegerField()
     participant = models.ManyToManyField(User, related_name='ecoprogram_participant', blank=True, through='EcoprogramApply', through_fields=('ecoprogram', 'guest'),)
     max_guest = models.IntegerField()
     address2 = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title 

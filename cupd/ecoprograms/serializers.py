@@ -3,7 +3,9 @@ from users.models import User
 from .models import Ecoprogram, EcoprogramApply, Review
 
 
-class ReviewSerializer(serializers.ModelSerializer): # 특정 에코프로그램 상세조회에 사용되는 리뷰
+# 특정 에코프로그램 상세조회에 사용되는 리뷰
+
+class ReviewSerializer(serializers.ModelSerializer): 
     user = serializers.SerializerMethodField()
 
     def get_user(self, obj):
@@ -14,14 +16,18 @@ class ReviewSerializer(serializers.ModelSerializer): # 특정 에코프로그램
         fields = ('id','user_id', 'content', 'user', 'profile_image', 'created_at', 'updated_at',)
 
 
-class ReviewCreateSerializer(serializers.ModelSerializer): # 리뷰 작성(POST) 및 수정(PUT)
+ # 리뷰 작성(POST) 및 수정(PUT)
+
+class ReviewCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
         fields = ('content')
 
 
-class EcoprogramApplySerializer(serializers.ModelSerializer): # 에코프로그램 신청
+ # 에코프로그램 신청
+
+class EcoprogramApplySerializer(serializers.ModelSerializer):
     guest_nickname = serializers.SerializerMethodField()
     ecoprogram = serializers.StringRelatedField()
 
@@ -33,7 +39,9 @@ class EcoprogramApplySerializer(serializers.ModelSerializer): # 에코프로그�
         fields = ('id', 'ecoprogram_id', 'guest', 'guest_nickname', 'ecoprogram', 'result', 'created_at',)
 
 
-class EcoprogramListSerializer(serializers.ModelSerializer): # 에코프로그램 전체 리스트 조회
+ # 에코프로그램 전체 리스트 조회
+
+class EcoprogramListSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
 
@@ -45,10 +53,12 @@ class EcoprogramListSerializer(serializers.ModelSerializer): # 에코프로그�
 
     class Meta:
         model = Ecoprogram
-        fields = ('title', 'content', 'host', 'location', 'ecoprogram_image', 'likes', 'views', 'organization', 'date')
+        fields = ('title', 'content', 'host', 'location', 'ecoprogram_image', 'likes', 'views', 'organization', 'due_date',)
 
 
-class EcoprogramSerializer(serializers.ModelSerializer): # 특정 에코프로그램 상세 (조회, 등록, 수정)
+ # 특정 에코프로그램 상세 (조회, 등록, 수정)
+
+class EcoprogramSerializer(serializers.ModelSerializer):
     host = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
@@ -75,3 +85,5 @@ class EcoprogramSerializer(serializers.ModelSerializer): # 특정 에코프로�
     class Meta:
         model = Ecoprogram
         fields = "__all__"
+
+

@@ -17,21 +17,23 @@ class ContactNumber(models.Model):
 
 
 class UpcyclingCompany(models.Model):
-    company_name = models.CharField(max_length=20)
-    registrant = models.OneToOneField(User, on_delete=models.CASCADE)
+    company = models.CharField(max_length=20)
+    registrant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='upcyclingcompany_registrant')
     company_image = models.ImageField(upload_to=rename_imagefile_to_uuid)
     contact_number = models.ForeignKey(ContactNumber, on_delete=models.CASCADE, related_name='upcycling_contact_number')
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='upcycling_location')
+    location = models.OneToOneField(Location, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.company_name)
+        return str(self.company)
     
     
 class UpcyclingPlastic(models.Model):
-    plastic_name = models.CharField(max_length=20)
+    plastic = models.CharField(max_length=30)
     classification = models.CharField(max_length=20)
     weight = models.PositiveIntegerField()
+    amount_per_weight = models.PositiveIntegerField()
+    expected_refund = weight*amount_per_weight
 
     def __str__(self):
-        return str(self.plastic_name)
+        return str(self.plastic)
 
