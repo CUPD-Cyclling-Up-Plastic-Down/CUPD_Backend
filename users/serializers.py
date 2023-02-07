@@ -2,6 +2,7 @@ import re
 from rest_framework import serializers
 from users.models import User
 from django.core.exceptions import ValidationError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from ecoprograms.serializers import EcoprogramSerializer, EcoprogramApplySerializer
 from ecoprograms.models import Ecoprogram
 from upcyclings.models import UpcyclingCompany
@@ -56,6 +57,21 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save() 
         return user
+
+
+# jwt 토큰 발급
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['email'] = user.email
+        token['nickname'] = user.nickname  
+        # ...
+
+        return token
 
 
 # 마이페이지

@@ -32,8 +32,11 @@ class UpcyclingPlastic(models.Model):
     classification = models.CharField(max_length=20)
     weight = models.PositiveIntegerField()
     amount_per_weight = models.PositiveIntegerField()
-    expected_refund = weight*amount_per_weight
-
+   
     def __str__(self):
         return str(self.plastic)
+
+    def __mul__(self):
+        expected_refund = self.weight*self.amount_per_weight
+        return expected_refund
 
