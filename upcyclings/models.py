@@ -37,6 +37,6 @@ class UpcyclingPlastic(models.Model):
         return str(self.plastic)
 
     def __mul__(self):
-        expected_refund = self.weight*self.amount_per_weight
+        expected_refund = self.weight*self.amount_per_weight # 예상 환급 금액
         return expected_refund
 

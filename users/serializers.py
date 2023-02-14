@@ -12,10 +12,10 @@ from upcyclings.serializers import UpcyclingCompanyManagementSerializer
 # 회원가입
 
 class SignUpSerializer(serializers.ModelSerializer):
-    email = serializers.CharField()
-    password = serializers.CharField()
+    email = serializers.SerializerMethodField()
+    password = serializers.SerializerMethodField()
     password2 = serializers.CharField()
-    nickname = serializers.CharField()
+    nickname = serializers.SerializerMethodField()
 
     class Meta:
         model = User

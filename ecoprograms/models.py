@@ -40,7 +40,7 @@ class EcoprogramApply(models.Model):
     ]
     ecoprogram = models.ForeignKey(Ecoprogram, on_delete=models.CASCADE, related_name='ecoprogram_apply')
     guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ecoprogram_apply_guest')
-    result = models.CharField('신청 유형', choices=CHOICES_APPLY, default='WAITING', null=True, max_length=3)
+    result = models.CharField('신청유형', choices=CHOICES_APPLY, default='WAITING', null=True, max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
