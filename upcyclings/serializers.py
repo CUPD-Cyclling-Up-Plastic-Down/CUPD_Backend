@@ -25,7 +25,7 @@ class UpcyclingCompanySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class UpcyclingCompanyEnrollSerializer(serializers.ModelSerializer):
+class UpcyclingCompanyManagementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UpcyclingCompany

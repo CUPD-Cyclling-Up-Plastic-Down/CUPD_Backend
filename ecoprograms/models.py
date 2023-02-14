@@ -34,13 +34,13 @@ class Ecoprogram(models.Model):
     
 class EcoprogramApply(models.Model):
     CHOICES_APPLY = [
-        ('승인', '승인'),
-        ('거절', '거절'),
-        ('대기', '대기'),
+        ('APPROVE', '승인'),
+        ('REJECTION', '거절'),
+        ('WAITING', '대기'),
     ]
     ecoprogram = models.ForeignKey(Ecoprogram, on_delete=models.CASCADE, related_name='ecoprogram_apply')
     guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ecoprogram_apply_guest')
-    result = models.CharField('신청 유형', choices=CHOICES_APPLY, default='대기', null=True, max_length=3)
+    result = models.CharField('신청 유형', choices=CHOICES_APPLY, default='WAITING', null=True, max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
