@@ -2,22 +2,21 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import get_object_or_404 
-from .serializers import ReviewSerializer
 from .models import Ecoprogram, Review, EcoprogramApply
-from .serializers import ReviewCreateSerializer, EcoprogramSerializer, EcoprogramListSerializer
+from .serializers import EcoprogramReviewSerializer, EcoprogramReviewCreateSerializer, EcoprogramSerializer, EcoprogramListSerializer
 
 
-# 리뷰 
+# 에코프로그램 리뷰 
 
-class ReviewView(APIView): # 보기/작성
+class EcoprogramReviewView(APIView): # 리뷰 전체보기 및 등록
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
-        serializer = ReviewSerializer(ecoprogram, many=True)
+        serializer = EcoprogramReviewSerializer(ecoprogram, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, ecoprogram_id):
-        serializer = ReviewCreateSerializer(data=request.data)
+        serializer = EcoprogramReviewCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user, ecoprogram_id=ecoprogram_id) # **kwargs 형태로 저장
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -25,12 +24,12 @@ class ReviewView(APIView): # 보기/작성
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ReviewDetailView(APIView):
+class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 수정 및 삭제
     
     def put(self, request, ecoprogram_id, reviews_id): 
         reviews = get_object_or_404(Review, id=reviews_id)
         if request.user == reviews.user:
-            serializer = ReviewCreateSerializer(reviews, data=request.data) 
+            serializer = EcoprogramReviewCreateSerializer(reviews, data=request.data) 
             if serializer.is_valid(): 
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK) 
@@ -48,7 +47,7 @@ class ReviewDetailView(APIView):
 
 # 에코프로그램
 
-class EcoproramView(APIView): # 전체 게시물 조회 페이지
+class EcoproramView(APIView): # 전체 프로그램 조회
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
@@ -56,7 +55,7 @@ class EcoproramView(APIView): # 전체 게시물 조회 페이지
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EcoprogramDetailView(APIView): # 해당 게시물 상세 페이지 (조회, 수정)
+class EcoprogramDetailView(APIView): # 해당 프로그램 상세 페이지 (조회, 수정, 삭제)
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
@@ -82,7 +81,19 @@ class EcoprogramDetailView(APIView): # 해당 게시물 상세 페이지 (조회
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
 
-class EcoprogramDetailApplyView(APIView): # 해당 게시물 상세 페이지에서 '신청'
+class EcoprogramDetailLikeView(APIView): # 해당 프로그램 '좋아요'
+
+    def post(self, request, ecoprogram_id):
+        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
+        if request.user in ecoprogram.likes.all():
+            ecoprogram.likes.remove(request.user)
+            return Response({"msg":"에코프로그램 좋아요를 취소했습니다."}, status=status.HTTP_200_OK)
+        else: 
+            ecoprogram.likes.add(request.user)
+            return Response({"msg":"에코프로그램을 좋아요했습니다."}, status=status.HTTP_200_OK)
+
+
+class EcoprogramDetailApplyView(APIView): # 해당 프로그램 상세 페이지에서 '신청'
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
@@ -106,7 +117,7 @@ class EcoprogramDetailApplyView(APIView): # 해당 게시물 상세 페이지에
                 return Response({"msg":"에코프로그램 신청을 접수했습니다."}, status=status.HTTP_200_OK)
             
 
-class EcoprogramEnrollView(APIView): # 게시물 등록 페이지
+class EcoprogramEnrollView(APIView): # 프로그램 추가 등록
 
     def post(self, request, ecoprogram_id):
         serializer = EcoprogramSerializer(data=request.data)
@@ -116,16 +127,5 @@ class EcoprogramEnrollView(APIView): # 게시물 등록 페이지
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
-
-class EcoprogramLikeView(APIView): # 에코프로그램 좋아요
-
-    def post(self, request, ecoprogram_id):
-        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
-        if request.user in ecoprogram.likes.all():
-            ecoprogram.likes.remove(request.user)
-            return Response({"msg":"에코프로그램 좋아요를 취소했습니다."}, status=status.HTTP_200_OK)
-        else: 
-            ecoprogram.likes.add(request.user)
-            return Response({"msg":"에코프로그램을 좋아요했습니다."}, status=status.HTTP_200_OK)
 
 

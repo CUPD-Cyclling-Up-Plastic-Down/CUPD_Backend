@@ -5,7 +5,7 @@ from .models import Ecoprogram, EcoprogramApply, Review
 
 # 특정 에코프로그램 상세조회에 사용되는 리뷰
 
-class ReviewSerializer(serializers.ModelSerializer): 
+class EcoprogramReviewSerializer(serializers.ModelSerializer): 
     user = serializers.SerializerMethodField()
 
     def get_user(self, obj):
@@ -18,7 +18,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
  # 리뷰 작성(POST) 및 수정(PUT)
 
-class ReviewCreateSerializer(serializers.ModelSerializer):
+class EcoprogramReviewCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
@@ -64,7 +64,7 @@ class EcoprogramSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
     participant_count = serializers.SerializerMethodField()
     ecoprogram_apply = EcoprogramApplySerializer(many=True)
-    review_ecoprogram = ReviewSerializer(many=True)
+    review_ecoprogram = EcoprogramReviewSerializer(many=True)
     review_ecoprogram_count = serializers.SerializerMethodField()
 
     def get_host(self, obj):

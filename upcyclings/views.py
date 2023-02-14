@@ -7,7 +7,7 @@ from .models import UpcyclingCompany
 from .serializers import UpcyclingCompanyListSerializer, UpcyclingCompanySerializer, UpcyclingCompanyEnrollSerializer
 
 
-class UpcyclingCompanyListView(APIView): # 전체 업사이클링 업체 조회 페이지
+class UpcyclingCompanyListView(APIView): # 전체 업사이클링 업체 조회
 
     def get(self, request, company_id):
         upcyclingcompany = get_object_or_404(UpcyclingCompany, id=company_id)
@@ -15,8 +15,7 @@ class UpcyclingCompanyListView(APIView): # 전체 업사이클링 업체 조회 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-class UpcyclingCompanyView(APIView): # 해당 업사이클링 업체 상세 페이지 (조회, 수정)
+class UpcyclingCompanyDetailView(APIView): # 해당 업사이클링 업체 상세 페이지 (조회, 수정, 삭제)
 
     def get(self, request, company_id):
         upcyclingcompany = get_object_or_404(UpcyclingCompany, id=company_id)
@@ -42,7 +41,7 @@ class UpcyclingCompanyView(APIView): # 해당 업사이클링 업체 상세 페�
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
 
-class UpcyclingCompanyEnrollView(APIView): # 업사이클링 업체 등록 페이지
+class UpcyclingCompanyEnrollView(APIView): # 업사이클링 업체 추가 등록 페이지
 
     def post(self, request, company_id):
         serializer = UpcyclingCompanySerializer(data=request.data)
