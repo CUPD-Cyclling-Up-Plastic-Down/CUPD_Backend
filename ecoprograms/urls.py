@@ -3,7 +3,10 @@ from ecoprograms import views
 
 urlpatterns = [
     path('<int:ecoprogram_id>/review/', views.EcoprogramReviewView.as_view(), 
-        name='ecoprogram_review_view'), # 리뷰 전체보기 및 등록
+        name='ecoprogram_review_view'), # 리뷰 전체보기
+
+    path('<int:ecoprogram_id>/review/create/', views.EcoprogramReviewCreateView.as_view(), 
+        name='ecoprogram_review_create_view'), # 리뷰 등록
 
     path('<int:ecoprogram_id>/review/<int:review_id>', views.EcoprogramReviewDetailView.as_view(), 
         name='ecoprogram_review_detail_view'), # 작성한 리뷰 수정 및 삭제

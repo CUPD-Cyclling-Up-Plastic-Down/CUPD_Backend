@@ -8,17 +8,20 @@ from .serializers import EcoprogramReviewSerializer, EcoprogramReviewCreateSeria
 
 # 에코프로그램 리뷰 
 
-class EcoprogramReviewView(APIView): # 리뷰 전체보기 및 등록
+class EcoprogramReviewView(APIView): # 리뷰 전체보기
 
     def get(self, request, ecoprogram_id):
-        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
-        serializer = EcoprogramReviewSerializer(ecoprogram, many=True)
+        review = get_object_or_404(Review, id=ecoprogram_id)
+        serializer = EcoprogramReviewSerializer(review, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class EcoprogramReviewCreateView(APIView): # 리뷰 등록
 
     def post(self, request, ecoprogram_id):
         serializer = EcoprogramReviewCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user, ecoprogram_id=ecoprogram_id) # **kwargs 형태로 저장
+            serializer.save(user=request.user, ecoprogram_id=ecoprogram_id)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -26,8 +29,8 @@ class EcoprogramReviewView(APIView): # 리뷰 전체보기 및 등록
 
 class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 수정 및 삭제
     
-    def put(self, request, ecoprogram_id, reviews_id): 
-        reviews = get_object_or_404(Review, id=reviews_id)
+    def put(self, request, ecoprogram_id): 
+        reviews = get_object_or_404(Review, id=ecoprogram_id)
         if request.user == reviews.user:
             serializer = EcoprogramReviewCreateSerializer(reviews, data=request.data) 
             if serializer.is_valid(): 
@@ -36,8 +39,8 @@ class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 수정 및 삭제
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
-    def delete(self, request, reviews_id, ecoprogram_id):
-        reviews = get_object_or_404(Review,id=reviews_id) 
+    def delete(self, request, ecoprogram_id):
+        reviews = get_object_or_404(Review, id=ecoprogram_id)
         if request.user == reviews.user:
             reviews.delete()
             return Response({"msg":"해당 리뷰가 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
@@ -59,7 +62,7 @@ class EcoprogramDetailView(APIView): # 해당 프로그램 상세 페이지 (조
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
-        serializer = EcoprogramSerializer(ecoprogram, many=True)
+        serializer = EcoprogramSerializer(ecoprogram)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def patch(self, request, ecoprogram_id):
@@ -76,7 +79,7 @@ class EcoprogramDetailView(APIView): # 해당 프로그램 상세 페이지 (조
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
         if request.user == ecoprogram.host: 
             ecoprogram.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({"msg":"게시물이 삭제되었습니다."},status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
@@ -93,12 +96,7 @@ class EcoprogramDetailLikeView(APIView): # 해당 프로그램 '좋아요'
             return Response({"msg":"에코프로그램을 좋아요했습니다."}, status=status.HTTP_200_OK)
 
 
-class EcoprogramDetailApplyView(APIView): # 해당 프로그램 상세 페이지에서 '신청'
-
-    def get(self, request, ecoprogram_id):
-        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
-        serializer = EcoprogramSerializer(ecoprogram, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+class EcoprogramDetailApplyView(APIView): # 해당 프로그램 상세 페이지에서 '신청'하기
 
     def post(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
@@ -122,7 +120,7 @@ class EcoprogramEnrollView(APIView): # 프로그램 추가 등록
     def post(self, request, ecoprogram_id):
         serializer = EcoprogramSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user, ecoprogram_id=ecoprogram_id)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK) 
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 

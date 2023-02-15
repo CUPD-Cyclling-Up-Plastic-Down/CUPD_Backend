@@ -24,7 +24,7 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate_email(self, data):
         email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         if not email_regex.match(data):
-            raise ValidationError('INVALID_EMAIL_ADDRESS')
+            raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
         elif User.objects.filter(email=data["email"]).exists():
             raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
         return data
@@ -32,9 +32,9 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate_password(self, data):
         password_regex = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
         if not password_regex.match(data):
-            raise serializers.ValidationError('INVALID_PASSWORD')
+            raise serializers.ValidationError({"password":"패스워드 형식이 올바르지 않습니다."})
         elif data['password'] != data['password2']:
-            raise serializers.ValidationError({"password": "패스워드가 일치하지 않습니다."})
+            raise serializers.ValidationError({"password":"패스워드가 일치하지 않습니다."})
         return data
         
     def validate_nickname(self, data):
@@ -46,18 +46,18 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = super().create(validated_data) 
-        password = user.password 
+        password = user.password
         user.set_password(password)
         user.save() 
         return user
 
     def update(self, instance, validated_data):
-        user = super().update(instance, validated_data)
-        password = user.password 
-        user.set_password(password)
-        user.save() 
-        return user
-
+        instance.email = validated_data.get('email', instance.email)
+        instance.nickname = validated_data.get('nickname', instance.nickname)
+        instance.password = validated_data.get('password', instance.password)
+        instance.set_password(validated_data['password'])
+        instance.save()
+        return instance
 
 # jwt 토큰 발급
 
@@ -122,7 +122,7 @@ class MypageConsumerProfileEditSerializer(serializers.ModelSerializer): # (소�
     def validate_email(self, data):
         email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         if not email_regex.match(data):
-            raise ValidationError('INVALID_EMAIL_ADDRESS')
+            raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
         elif User.objects.filter(email=data["email"]).exists():
             raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
         return data
@@ -143,9 +143,9 @@ class MypageConsumerProfileEditSerializer(serializers.ModelSerializer): # (소�
     def validate_password(self, data):
         password_regex = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
         if not password_regex.match(data):
-            raise serializers.ValidationError('INVALID_PASSWORD')
+            raise serializers.ValidationError({"password":"패스워드 형식이 올바르지 않습니다."})
         elif data['password'] != data['password2']:
-            raise serializers.ValidationError({"password": "패스워드가 일치하지 않습니다."})
+            raise serializers.ValidationError({"password":"패스워드가 일치하지 않습니다."})
         return data
 
     def update(self, instance, validated_data):
@@ -159,14 +159,14 @@ class MypageConsumerProfileEditSerializer(serializers.ModelSerializer): # (소�
 
 # 마이페이지(환경단체)
 
-class MypageEcoprogramCreatedSerializer(serializers.ModelSerializer): # (환경단체): 생성한 에코프로그램
+class MypageEcoprogramCreatedSerializer(serializers.ModelSerializer): # (환경단체): 생성한 에코프로그램 조회 및 삭제
     
     class Meta:
         model = Ecoprogram
         fields = ('title', 'due_date', 'result', 'host', 'created_at', 'updated_at', 'participant', 'max_guest')
 
 
-class MypageEcoprogramApproveRejectionSerializer(serializers.ModelSerializer): # (환경단체): 에코프로그램별 사용자 승인/거절 여부 결정
+class MypageEcoprogramApproveRejectSerializer(serializers.ModelSerializer): # (환경단체): 해당 에코프로그램 신청 인원 (조회)
     ecoprogram_apply_guest = EcoprogramApplySerializer(many=True)
 
     class Meta:
@@ -181,7 +181,7 @@ class MypageUpcyclingCompanyManagementSerializer(serializers.ModelSerializer): #
         fields = ('company',)
 
 
-class MypageOrganizationInfoSerializer(serializers.ModelSerializer): # (환경단체): 프로필 정보 불러오기
+class MypageOrganizationInfoSerializer(serializers.ModelSerializer): # (환경단체): 프로필 정보(조회)
     ecoprogram_host = EcoprogramSerializer(many=True)
     ecoprogram_create = MypageEcoprogramCreatedSerializer(many=True)
     upcyclingcompany_registrant = UpcyclingCompanyManagementSerializer(many=True)
@@ -191,7 +191,7 @@ class MypageOrganizationInfoSerializer(serializers.ModelSerializer): # (환경�
         fields = ('nickname', 'email', 'profile_image', 'ecoprogram_host', 'ecoprogram_create', 'upcyclingcompany_registrant')
 
 
-class MypageOrganizationProfileEditSerializer(serializers.ModelSerializer): # (환경단체): 마이페이지 프로필 정보 수정
+class MypageOrganizationProfileEditSerializer(serializers.ModelSerializer): # (환경단체): 프로필 정보(수정)
     password = serializers.CharField(write_only=True, required=True)
     password2 = serializers.CharField(write_only=True, required=True)
     old_password = serializers.CharField(write_only=True, required=True)

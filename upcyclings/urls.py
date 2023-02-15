@@ -9,5 +9,5 @@ urlpatterns = [
         name='upcycling_company_detail_view'), # 해당 업사이클링 업체 상세 페이지 (조회, 수정, 삭제)
 
     path('enroll/', views.UpcyclingCompanyEnrollView.as_view(), 
-        name='upcycling_company_enroll_view'), # 업사이클링 업체 추가 등록
+        name='upcycling_company_enroll_view'), # 업사이클링 업체 (등록)
 ]

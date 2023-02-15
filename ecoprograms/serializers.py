@@ -13,7 +13,7 @@ class EcoprogramReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('id','user_id', 'content', 'user', 'profile_image', 'created_at', 'updated_at',)
+        fields = ('id','user_id', 'user', 'content', 'profile_image', 'created_at', 'updated_at',)
 
 
  # 리뷰 작성(POST) 및 수정(PUT)
