@@ -26,13 +26,17 @@ class UpcyclingCompany(models.Model):
 class UpcyclingPlastic(models.Model):
     plastic = models.CharField(max_length=30)
     classification = models.CharField(max_length=20)
-    weight = models.PositiveIntegerField()
-    amount_per_weight = models.PositiveIntegerField()
+    weight = models.PositiveIntegerField(default=0)
+    amount_per_weight = models.PositiveIntegerField(default=0)
+    expected_refund = models.PositiveIntegerField(default=0, null=True)
    
     def __str__(self):
         return str(self.plastic)
 
-    def __mul__(self):
-        expected_refund = self.weight*self.amount_per_weight # 예상 환급 금액
-        return expected_refund
+    def save(self):
+        self.expected_refund = (self.weight)*(self.amount_per_weight) # 예상 환급 금액
+        super().save()
+
+
+
 

@@ -44,10 +44,10 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ['email']
+    REQUIRED_FIELDS = ['']
 
     def __str__(self):
-        return self.email
+        return self.nickname
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"

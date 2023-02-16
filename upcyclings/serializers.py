@@ -4,10 +4,16 @@ from .models import UpcyclingCompany, UpcyclingPlastic
 
 
 class UpcyclingPlasticSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
         model = UpcyclingPlastic
         fields = "__all__"
+
+    # def __mul__(self):
+    #     expected_refund = (UpcyclingPlastic.weight)*(UpcyclingPlastic.amount_per_weight) # 예상 환급 금액
+    #     return expected_refund
+    
+    # expected_refund = __mul__()
 
 
 class UpcyclingCompanyListSerializer(serializers.ModelSerializer): # 전체 업사이클링 업체 조회
