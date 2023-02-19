@@ -6,25 +6,38 @@ from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import User
 from .serializers import (
-    SignUpSerializer, MypageConsumerInfoSerializer, MypageOrganizationInfoSerializer, MyTokenObtainPairSerializer, 
-    MypageEcoprogramAppliedSerializer, MypageEcoprogramConfirmedSerializer, MypageEcoprogramLikeSerializer,
-    MypageEcoprogramCreatedSerializer, MypageEcoprogramApproveRejectSerializer, MypageConsumerProfileEditSerializer,
-    MypageOrganizationProfileEditSerializer
+    SignUpConsumererializer, SignUpOrganizationSerializer, MypageConsumerInfoSerializer, 
+    MypageOrganizationInfoSerializer, MyTokenObtainPairSerializer, MypageEcoprogramAppliedSerializer, 
+    MypageEcoprogramConfirmedSerializer, MypageEcoprogramLikeSerializer, MypageEcoprogramCreatedSerializer, 
+    MypageEcoprogramApproveRejectSerializer, MypageConsumerProfileEditSerializer, MypageOrganizationProfileEditSerializer
 )
 from ecoprograms.models import Ecoprogram, EcoprogramApply
 from upcyclings.models import UpcyclingCompany
 from upcyclings.serializers import UpcyclingCompanyManagementSerializer
 
 
-# 회원가입
+# 회원가입(소비자)
 
-class SignUpView(APIView):
+class SignUpConsumerView(APIView):
 
     def post(self, request):
-        serializer = SignUpSerializer(data=request.data)
+        serializer = SignUpConsumererializer(data=request.data)
         if serializer.is_valid(raise_exception=True): # raise_exception=True는 유효성 검사시 에러 메세지를 가시적으로 클라이언트 측에 전달하는 역할
             serializer.save()
-            return Response({"msg":"회원가입이 완료되었습니다."}, status=status.HTTP_201_CREATED)
+            return Response({"msg":"(소비자) 회원가입이 완료되었습니다."}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"msg":f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 회원가입(환경단체)
+
+class SignUpOrganizationView(APIView):
+
+    def post(self, request):
+        serializer = SignUpOrganizationSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({"msg":"(환경단체) 회원가입이 완료되었습니다."}, status=status.HTTP_201_CREATED)
         else:
             return Response({"msg":f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -37,15 +50,14 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 # 마이페이지(소비자)
 
-class MypageConsumerInfoView(APIView):
+class MypageConsumerInfoView(APIView): # (소비자): 프로필 정보 (조회, 삭제)
 
-    def get(self, request, user_id): # (소비자): 프로필 정보 (조회)
-    
+    def get(self, request, user_id): # 조회
         user = get_object_or_404(User, id=user_id)
         serializer = MypageConsumerInfoSerializer(user)
         return Response(serializer.data)
 
-    def delete(self, request, user_id): # 회원탈퇴
+    def delete(self, request, user_id): # 삭제
         user = get_object_or_404(User, id=user_id)
         if request.user == user:
             user.delete()
@@ -81,7 +93,7 @@ class MypageEcoprogramAppliedView(APIView): # (소비자): 신청한 에코프�
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
 
-class MypageEcoprogramConfirmedView(APIView): # (소비자): 참여확정된 에코프로그램
+class MypageEcoprogramConfirmedView(APIView): # (소비자): 참여확정된 에코프로그램 (조회, 삭제)
 
     def get(self, request, user_id): # 조회
         user = get_object_or_404(User, id=user_id)
@@ -108,18 +120,16 @@ class MypageEcoprogramLikeView(APIView): # (소비자): 좋아요한 에코프�
 
     
 
-
-
 # 마이페이지(환경단체)
 
-class MypageOrganizationInfoView(APIView): 
+class MypageOrganizationInfoView(APIView): # 프로필 정보 (조회, 삭제)
 
-    def get(self, request, user_id): # 프로필 정보(조회)
+    def get(self, request, user_id): # 조회
         user = get_object_or_404(User, id=user_id)
         serializer = MypageOrganizationInfoSerializer(user)
         return Response(serializer.data)
 
-    def delete(self, request, user_id): # 회원탈퇴
+    def delete(self, request, user_id): # 삭제
         user = get_object_or_404(User, id=user_id)
         if request.user == user:
             user.delete()
@@ -139,7 +149,7 @@ class MypageOrganizationProfileEditView(APIView): # 프로필 정보(수정)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MypageEcoprogramCreatedView(APIView): # (환경단체): 생성한 에코프로그램
+class MypageEcoprogramCreatedView(APIView): # (환경단체): 생성한 에코프로그램 (조회, 삭제)
     
     def get(self, request, user_id): # 조회
         user = get_object_or_404(User, id=user_id)
@@ -156,14 +166,14 @@ class MypageEcoprogramCreatedView(APIView): # (환경단체): 생성한 에코�
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
 
-class MypageEcoprogramApproveRejectView(APIView):
+class MypageEcoprogramApproveRejectView(APIView): # 해당 에코프로그램 신청 인원 (조회, 처리)
 
-    def get(self, request, user_id): # 해당 에코프로그램 신청 인원 (조회)
+    def get(self, request, user_id): # 조회
         user = get_object_or_404(User, id=user_id)
         serializer = MypageEcoprogramApproveRejectSerializer(user, many=True)
         return Response(serializer.data)
 
-    def put(self, request, ecoprogram_id): # 해당 에코프로그램 신청 인원 (처리) (승인/거절 여부 결정)
+    def put(self, request, ecoprogram_id): # 처리 -> 승인/거절 여부 결정
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
         if request.user == ecoprogram.host: 
             guest = request.data['guest'] # 특정 신청자
@@ -181,7 +191,7 @@ class MypageEcoprogramApproveRejectView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class MypageUpcyclingCompanyManagementView(APIView): # (환경단체): 업사이클링 업체 등록 관리
+class MypageUpcyclingCompanyManagementView(APIView): # (환경단체): 업사이클링 업체 등록 관리 (조회, 삭제)
 
     def get(self, request, registrant_id): # 조회
         registrant = get_object_or_404(UpcyclingCompany, id=registrant_id)
