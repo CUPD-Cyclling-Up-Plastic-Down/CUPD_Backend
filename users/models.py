@@ -41,6 +41,12 @@ class User(AbstractBaseUser):
     profile_image = models.ImageField(default='/default_profile/default.PNG', upload_to=rename_imagefile_to_uuid)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    USER_CHOICES =[
+        ('CONSUMER','소비자'),
+        ('ORGANIZATION', '환경단체'),
+    ]
+    user_category = models.CharField('사용자 유형',max_length=15, choices=USER_CHOICES, null=True)
+    
     objects = UserManager()
     USERNAME_FIELD = 'email'
     # REQUIRED_FIELDS = ['']
