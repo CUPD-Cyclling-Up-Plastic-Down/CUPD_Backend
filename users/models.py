@@ -3,6 +3,7 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser,
 )
 from .utils import rename_imagefile_to_uuid
+from django.utils.translation import gettext_lazy as _
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -41,7 +42,7 @@ class User(AbstractBaseUser):
         CONSUMER = "CONSUMER", "소비자"
         ORGANIZATION = "ORGANIZATION", "환경단체"
 
-    type = models.CharField(('Type'), max_length=15, choices=Types.choices)
+    type = models.CharField(_('Type'), max_length=15, choices=Types.choices)
     email = models.EmailField("이메일", max_length=100, unique=True,)
     nickname = models.CharField("닉네임", max_length=10, unique=True,)
     profile_image = models.ImageField(default='/default_profile/default.PNG', upload_to=rename_imagefile_to_uuid)

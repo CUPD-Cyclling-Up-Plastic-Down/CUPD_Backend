@@ -44,7 +44,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['nickname', 'email', 'password', 'is_active', 'is_admin', 'type']
+        fields = ['nickname', 'email', 'type', 'password', 'is_active', 'is_admin',]
 
 
 class UserAdmin(BaseUserAdmin):
@@ -55,10 +55,10 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ['id', 'nickname', 'email', 'is_admin', 'type']
+    list_display = ['id', 'nickname', 'email', 'type', 'is_admin',]
     list_filter = ['is_admin']
     fieldsets = [
-        (None, {'fields': ['nickname', 'email', 'profile_image', 'password', 'type']}),
+        (None, {'fields': ['nickname', 'email', 'type', 'profile_image', 'password',]}),
         # ('Personal info', {'fields': ['']}),
         ('Permissions', {'fields': ['is_admin']}),
     ]
@@ -67,7 +67,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = [
         (None, {
             'classes': ['wide'],
-            'fields': ['nickname', 'email', 'password1', 'password2'],
+            'fields': ['nickname', 'email', 'type', 'password1', 'password2',],
         }),
     ]
     search_fields = ['email']
