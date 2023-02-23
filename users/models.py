@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
+    BaseUserManager, AbstractBaseUser,
 )
 from .utils import rename_imagefile_to_uuid
 
@@ -36,17 +36,17 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
+    
+    class Types(models.TextChoices):
+        CONSUMER = "CONSUMER", "소비자"
+        ORGANIZATION = "ORGANIZATION", "환경단체"
+
+    type = models.CharField(('Type'), max_length=15, choices=Types.choices)
     email = models.EmailField("이메일", max_length=100, unique=True,)
     nickname = models.CharField("닉네임", max_length=10, unique=True,)
     profile_image = models.ImageField(default='/default_profile/default.PNG', upload_to=rename_imagefile_to_uuid)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    USER_CHOICES =[
-        ('CONSUMER','소비자'),
-        ('ORGANIZATION', '환경단체'),
-    ]
-    user_category = models.CharField('사용자 유형',max_length=15, choices=USER_CHOICES, null=True)
-    
     objects = UserManager()
     USERNAME_FIELD = 'email'
     # REQUIRED_FIELDS = ['']
@@ -69,3 +69,43 @@ class User(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+    
+class ConsumerManager(models.Manager):
+    
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(type=User.Types.CONSUMER)
+
+
+class Consumer(User):
+    objects = ConsumerManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.type = User.Types.CONSUMER
+        return super().save(*args, **kwargs)
+
+
+class OrganizationManager(models.Manager):
+    
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(type=User.Types.ORGANIZATION)
+
+
+class Organization(User):
+    objects = OrganizationManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.type = User.Types.ORGANIZATION
+        return super().save(*args, **kwargs)
+
+        
+
+

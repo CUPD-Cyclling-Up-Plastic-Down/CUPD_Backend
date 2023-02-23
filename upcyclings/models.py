@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import User
+from users.models import Organization
 from .utils import rename_imagefile_to_uuid
 from django.core.validators import RegexValidator
 
@@ -13,7 +13,7 @@ class Location(models.Model):
 
 class UpcyclingCompany(models.Model):
     company = models.CharField(max_length=20)
-    registrant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='upcyclingcompany_registrant')
+    registrant = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='upcyclingcompany_registrant')
     company_image = models.ImageField(upload_to=rename_imagefile_to_uuid)
     location = models.OneToOneField(Location, on_delete=models.CASCADE)
     contact_number_regex = RegexValidator(regex = r'^0([2|31|32|33|41|42|43|44|51|52|53|54|55|61|62|63|64]?)-?([0-9]{3,4})-?([0-9]{4})')

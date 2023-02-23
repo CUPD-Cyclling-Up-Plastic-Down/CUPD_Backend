@@ -1,6 +1,6 @@
 import re
 from rest_framework import serializers
-from users.models import User
+from users.models import Consumer, Organization
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from ecoprograms.serializers import EcoprogramSerializer, EcoprogramApplySerializer
@@ -18,14 +18,14 @@ class SignUpConsumererializer(serializers.ModelSerializer):
     nickname = serializers.SerializerMethodField()
 
     class Meta:
-        model = User
+        model = Consumer
         fields = "__all__"
 
     def validate_email(self, data):
         email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         if not email_regex.match(data):
             raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
-        elif User.objects.filter(email=data["email"]).exists():
+        elif Consumer.objects.filter(email=data["email"]).exists():
             raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
         return data
 
@@ -40,7 +40,7 @@ class SignUpConsumererializer(serializers.ModelSerializer):
     def validate_nickname(self, data):
         if len(data["nickname"]) < 2:
             raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
-        if User.objects.filter(nickname=data["nickname"]).exists():
+        if Consumer.objects.filter(nickname=data["nickname"]).exists():
             raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
         return data
 
@@ -69,14 +69,14 @@ class SignUpOrganizationSerializer(serializers.ModelSerializer):
     nickname = serializers.SerializerMethodField()
 
     class Meta:
-        model = User
+        model = Organization
         fields = "__all__"
 
     def validate_email(self, data):
         email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         if not email_regex.match(data):
             raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
-        elif User.objects.filter(email=data["email"]).exists():
+        elif Organization.objects.filter(email=data["email"]).exists():
             raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
         return data
 
@@ -91,7 +91,7 @@ class SignUpOrganizationSerializer(serializers.ModelSerializer):
     def validate_nickname(self, data):
         if len(data["nickname"]) < 2:
             raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
-        if User.objects.filter(nickname=data["nickname"]).exists():
+        if Organization.objects.filter(nickname=data["nickname"]).exists():
             raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
         return data
 
@@ -159,7 +159,7 @@ class MypageConsumerInfoSerializer(serializers.ModelSerializer): # (소비자): 
     ecoprogram_apply_guest = EcoprogramApplySerializer(many=True)
 
     class Meta:
-        model = User
+        model = Consumer
         fields = ('nickname', 'email', 'profile_image', 'ecoprogram_likes', 'ecoprogram_apply_guest')
 
 
@@ -169,21 +169,21 @@ class MypageConsumerProfileEditSerializer(serializers.ModelSerializer): # (소�
     old_password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
-        model = User
+        model = Consumer
         fields = ('email', 'nickname', 'old_password', 'password', 'password_check')
 
     def validate_email(self, data):
         email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         if not email_regex.match(data):
             raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
-        elif User.objects.filter(email=data["email"]).exists():
+        elif Consumer.objects.filter(email=data["email"]).exists():
             raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
         return data
 
     def validate_nickname(self, data):
         if len(data["nickname"]) < 2:
             raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
-        if User.objects.filter(nickname=data["nickname"]).exists():
+        if Consumer.objects.filter(nickname=data["nickname"]).exists():
             raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
         return data
 
@@ -223,7 +223,7 @@ class MypageEcoprogramApproveRejectSerializer(serializers.ModelSerializer): # (�
     ecoprogram_apply_guest = EcoprogramApplySerializer(many=True)
 
     class Meta:
-        model = User
+        model = Organization
         fields = ('ecoprogram_apply_guest')
 
 
@@ -240,7 +240,7 @@ class MypageOrganizationInfoSerializer(serializers.ModelSerializer): # (환경�
     upcyclingcompany_registrant = UpcyclingCompanyManagementSerializer(many=True)
     
     class Meta:
-        model = User
+        model = Organization
         fields = ('nickname', 'email', 'profile_image', 'ecoprogram_host', 'ecoprogram_create', 'upcyclingcompany_registrant')
 
 
@@ -250,21 +250,21 @@ class MypageOrganizationProfileEditSerializer(serializers.ModelSerializer): # (�
     old_password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
-        model = User
+        model = Organization
         fields = ('email', 'nickname', 'old_password', 'password', 'password_check')
 
     def validate_email(self, data):
         email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
         if not email_regex.match(data):
             raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
-        elif User.objects.filter(email=data["email"]).exists():
+        elif Organization.objects.filter(email=data["email"]).exists():
             raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
         return data
 
     def validate_nickname(self, data):
         if len(data["nickname"]) < 2:
             raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
-        if User.objects.filter(nickname=data["nickname"]).exists():
+        if Organization.objects.filter(nickname=data["nickname"]).exists():
             raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
         return data
 

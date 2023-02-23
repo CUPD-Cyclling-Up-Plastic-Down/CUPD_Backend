@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import User
+from .models import Consumer, Organization
 from .serializers import (
     SignUpConsumererializer, SignUpOrganizationSerializer, MypageConsumerInfoSerializer, 
     MypageOrganizationInfoSerializer, MyTokenObtainPairSerializer, MypageEcoprogramAppliedSerializer, 
@@ -53,12 +53,12 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class MypageConsumerInfoView(APIView): # (소비자): 프로필 정보 (조회, 삭제)
 
     def get(self, request, user_id): # 조회
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(Consumer, id=user_id)
         serializer = MypageConsumerInfoSerializer(user)
         return Response(serializer.data)
 
     def delete(self, request, user_id): # 삭제
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(Consumer, id=user_id)
         if request.user == user:
             user.delete()
             return Response({"msg":"회원탈퇴 완료"},status=status.HTTP_204_NO_CONTENT)
@@ -80,7 +80,7 @@ class MypageConsumerProfileEditView(APIView): # (소비자): 프로필 정보 (�
 class MypageEcoprogramAppliedView(APIView): # (소비자): 신청한 에코프로그램(조회, 삭제)
 
     def get(self, request, user_id): # 조회
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(Consumer, id=user_id)
         serializer = MypageEcoprogramAppliedSerializer(user, many=True)
         return Response(serializer.data)
 
@@ -96,7 +96,7 @@ class MypageEcoprogramAppliedView(APIView): # (소비자): 신청한 에코프�
 class MypageEcoprogramConfirmedView(APIView): # (소비자): 참여확정된 에코프로그램 (조회, 삭제)
 
     def get(self, request, user_id): # 조회
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(Consumer, id=user_id)
         serializer = MypageEcoprogramConfirmedSerializer(user, many=True)
         if request.data['result'] == '승인':
             return Response(serializer.data)
@@ -113,7 +113,7 @@ class MypageEcoprogramConfirmedView(APIView): # (소비자): 참여확정된 에
 class MypageEcoprogramLikeView(APIView): # (소비자): 좋아요한 에코프로그램
 
     def get(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(Consumer, id=user_id)
         serializer = MypageEcoprogramLikeSerializer(user, many=True)
         # if request.data['likes']:
         return Response(serializer.data)
@@ -125,12 +125,12 @@ class MypageEcoprogramLikeView(APIView): # (소비자): 좋아요한 에코프�
 class MypageOrganizationInfoView(APIView): # 프로필 정보 (조회, 삭제)
 
     def get(self, request, user_id): # 조회
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(Organization, id=user_id)
         serializer = MypageOrganizationInfoSerializer(user)
         return Response(serializer.data)
 
     def delete(self, request, user_id): # 삭제
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(Organization, id=user_id)
         if request.user == user:
             user.delete()
             return Response({"msg":"회원탈퇴 완료"},status=status.HTTP_204_NO_CONTENT)
@@ -152,7 +152,7 @@ class MypageOrganizationProfileEditView(APIView): # 프로필 정보(수정)
 class MypageEcoprogramCreatedView(APIView): # (환경단체): 생성한 에코프로그램 (조회, 삭제)
     
     def get(self, request, user_id): # 조회
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(Organization, id=user_id)
         serializer = MypageEcoprogramCreatedSerializer(user, many=True)
         if request.data['host'] == request.user:
             return Response(serializer.data)
@@ -169,7 +169,7 @@ class MypageEcoprogramCreatedView(APIView): # (환경단체): 생성한 에코�
 class MypageEcoprogramApproveRejectView(APIView): # 해당 에코프로그램 신청 인원 (조회, 처리)
 
     def get(self, request, user_id): # 조회
-        user = get_object_or_404(User, id=user_id)
+        user = get_object_or_404(Organization, id=user_id)
         serializer = MypageEcoprogramApproveRejectSerializer(user, many=True)
         return Response(serializer.data)
 
