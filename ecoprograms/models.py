@@ -46,6 +46,9 @@ class EcoprogramApply(models.Model):
     class Meta:
         db_table = "ecoprogram_apply"
 
+    def __str__(self):
+        return str(self.ecoprogram)
+
 
 class Review(models.Model):
     user = models.ForeignKey(Consumer, on_delete=models.CASCADE, related_name='review_user')
