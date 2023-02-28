@@ -24,8 +24,6 @@ class UpcyclingCompany(models.Model):
     
     
 class UpcyclingPlastic(models.Model):
-    plastic = models.CharField(max_length=30)
-    classification = models.CharField(max_length=20)
     weight = models.PositiveIntegerField(default=0)
     amount_per_weight = models.PositiveIntegerField(default=0)
     expected_refund = models.PositiveIntegerField(default=0, null=True)
