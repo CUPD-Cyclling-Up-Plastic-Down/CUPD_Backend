@@ -15,7 +15,7 @@ class UpcyclingCompany(models.Model):
     company = models.CharField(max_length=20)
     registrant = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='upcyclingcompany_registrant')
     company_image = models.ImageField(upload_to=rename_imagefile_to_uuid)
-    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     contact_number_regex = RegexValidator(regex = r'^0([2|31|32|33|41|42|43|44|51|52|53|54|55|61|62|63|64]?)-?([0-9]{3,4})-?([0-9]{4})')
     contact_number = models.CharField(validators=[contact_number_regex], max_length=11, unique=True)
 
@@ -24,6 +24,7 @@ class UpcyclingCompany(models.Model):
     
     
 class UpcyclingPlastic(models.Model):
+    company = models.ForeignKey(UpcyclingCompany, on_delete=models.CASCADE, related_name='upcyclingplastic_company')
     weight = models.PositiveIntegerField(default=0)
     amount_per_weight = models.PositiveIntegerField(default=0)
     expected_refund = models.PositiveIntegerField(default=0, null=True)
