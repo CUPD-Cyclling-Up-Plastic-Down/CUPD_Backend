@@ -11,7 +11,7 @@ urlpatterns = [
     path('api/token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'), # JWT access token 발급
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # JWT refresh token 발급
     path('signup/', views.SignUpConsumerView.as_view(), name='signup_view'), # 회원가입(소비자)
-    path('signup/', views.SignUpOrganizationView.as_view(), name='signup_view'), # 회원가입(환경단체)
+    # path('signup/', views.SignUpOrganizationView.as_view(), name='signup_view'), # 회원가입(환경단체)
     # path('kakao/callback/'),
     # path('google/callback/'),
     

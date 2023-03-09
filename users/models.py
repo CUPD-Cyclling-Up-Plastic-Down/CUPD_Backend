@@ -41,13 +41,14 @@ class User(AbstractBaseUser):
     class Types(models.TextChoices):
         CONSUMER = "CONSUMER", "소비자"
         ORGANIZATION = "ORGANIZATION", "환경단체"
-
+    
     type = models.CharField(_('Type'), max_length=15, choices=Types.choices)
     email = models.EmailField("이메일", max_length=100, unique=True,)
     nickname = models.CharField("닉네임", max_length=10, unique=True,)
     profile_image = models.ImageField(default='/default_profile/default.PNG', upload_to=rename_imagefile_to_uuid)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    password2 = models.CharField(max_length=20)
     objects = UserManager()
     USERNAME_FIELD = 'email'
     # REQUIRED_FIELDS = ['']
@@ -71,7 +72,7 @@ class User(AbstractBaseUser):
         # Simplest possible answer: All admins are staff
         return self.is_admin
 
-    
+
 class ConsumerManager(models.Manager):
     
     def get_queryset(self, *args, **kwargs):
@@ -88,7 +89,7 @@ class Consumer(User):
         if not self.pk:
             self.type = User.Types.CONSUMER
         return super().save(*args, **kwargs)
-
+    
 
 class OrganizationManager(models.Manager):
     
@@ -106,7 +107,5 @@ class Organization(User):
         if not self.pk:
             self.type = User.Types.ORGANIZATION
         return super().save(*args, **kwargs)
-
-        
 
 

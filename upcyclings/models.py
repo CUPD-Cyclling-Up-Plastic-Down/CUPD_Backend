@@ -25,6 +25,7 @@ class UpcyclingCompany(models.Model):
     
 class UpcyclingPlastic(models.Model):
     company = models.ForeignKey(UpcyclingCompany, on_delete=models.CASCADE, related_name='upcyclingplastic_company')
+    plastic = models.CharField(max_length=50)
     weight = models.PositiveIntegerField(default=0)
     amount_per_weight = models.PositiveIntegerField(default=0)
     expected_refund = models.PositiveIntegerField(default=0, null=True)

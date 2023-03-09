@@ -11,51 +11,47 @@ from upcyclings.serializers import UpcyclingCompanyManagementSerializer
 
 # 회원가입(소비자)
 
-class SignUpConsumererializer(serializers.ModelSerializer):
-    email = serializers.SerializerMethodField()
-    password = serializers.SerializerMethodField()
+class SignUpConsumerSerializer(serializers.ModelSerializer):
+    email = serializers.CharField()
+    password = serializers.CharField()
     password2 = serializers.CharField()
-    nickname = serializers.SerializerMethodField()
+    nickname = serializers.CharField()
 
     class Meta:
         model = Consumer
-        fields = "__all__"
+        fields = ("type", "nickname", "email", "password", "password2")
 
-    def validate_email(self, data):
-        email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-        if not email_regex.match(data):
-            raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
-        elif Consumer.objects.filter(email=data["email"]).exists():
-            raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
-        return data
-
-    def validate_password(self, data):
-        password_regex = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
-        if not password_regex.match(data):
-            raise serializers.ValidationError({"password":"패스워드 형식이 올바르지 않습니다."})
-        elif data['password'] != data['password2']:
-            raise serializers.ValidationError({"password":"패스워드가 일치하지 않습니다."})
-        return data
+    def validate(self, data):
         
-    def validate_nickname(self, data):
+        email = data["email"]
+        email_validation = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        password = all(x not in ["!", "@", "#", "$", "%", "^", "&", "*", "_"] for x in data["password"])
+        if not email_validation.fullmatch(email) :
+            raise serializers.ValidationError({"email":"이메일 형식을 확인해주세요"})
+
+        if Consumer.objects.filter(nickname=data["nickname"]).exists():
+                raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+        
         if len(data["nickname"]) < 2:
             raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
-        if Consumer.objects.filter(nickname=data["nickname"]).exists():
-            raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+
+        elif len(data["password"]) < 2 or password:
+            raise serializers.ValidationError({"password":"password는  2자 이상 특수문자 포함 "})
+
         return data
 
     def create(self, validated_data):
-        user = super().create(validated_data) 
+        user = super().create(validated_data)
         password = user.password
         user.set_password(password)
-        user.save() 
+        user.save()
         return user
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email', instance.email)
         instance.nickname = validated_data.get('nickname', instance.nickname)
         instance.password = validated_data.get('password', instance.password)
-        instance.set_password(validated_data['password'])
+        instance.set_password(validated_data[1])
         instance.save()
         return instance
 
@@ -72,27 +68,23 @@ class SignUpOrganizationSerializer(serializers.ModelSerializer):
         model = Organization
         fields = "__all__"
 
-    def validate_email(self, data):
-        email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-        if not email_regex.match(data):
-            raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
-        elif Organization.objects.filter(email=data["email"]).exists():
-            raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
-        return data
-
-    def validate_password(self, data):
-        password_regex = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
-        if not password_regex.match(data):
-            raise serializers.ValidationError({"password":"패스워드 형식이 올바르지 않습니다."})
-        elif data['password'] != data['password2']:
-            raise serializers.ValidationError({"password":"패스워드가 일치하지 않습니다."})
-        return data
+    def validate(self, data):
         
-    def validate_nickname(self, data):
+        email = data["email"]
+        email_validation = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        password = all(x not in ["!", "@", "#", "$", "%", "^", "&", "*", "_"] for x in data["password"])
+        if not email_validation.fullmatch(email) :
+            raise serializers.ValidationError({"email":"이메일 형식을 확인해주세요"})
+
+        if Organization.objects.filter(nickname=data["nickname"]).exists():
+                raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+        
         if len(data["nickname"]) < 2:
             raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
-        if Organization.objects.filter(nickname=data["nickname"]).exists():
-            raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+
+        elif len(data["password"]) < 2 or password:
+            raise serializers.ValidationError({"password":"password는  2자 이상 특수문자 포함 "})
+
         return data
 
     def create(self, validated_data):
@@ -123,7 +115,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['email'] = user.email
         token['nickname'] = user.nickname  
         # ...
-
         return token
 
 
@@ -172,33 +163,29 @@ class MypageConsumerProfileEditSerializer(serializers.ModelSerializer): # (소�
         model = Consumer
         fields = ('email', 'nickname', 'old_password', 'password', 'password_check')
 
-    def validate_email(self, data):
-        email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-        if not email_regex.match(data):
-            raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
-        elif Consumer.objects.filter(email=data["email"]).exists():
-            raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
-        return data
+    def validate(self, data):
+        
+        email = data["email"]
+        email_validation = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        password = all(x not in ["!", "@", "#", "$", "%", "^", "&", "*", "_"] for x in data["password"])
+        if not email_validation.fullmatch(email) :
+            raise serializers.ValidationError({"email":"이메일 형식을 확인해주세요"})
 
-    def validate_nickname(self, data):
+        if Consumer.objects.filter(nickname=data["nickname"]).exists():
+                raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+        
         if len(data["nickname"]) < 2:
             raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
-        if Consumer.objects.filter(nickname=data["nickname"]).exists():
-            raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
-        return data
 
+        elif len(data["password"]) < 2 or password:
+            raise serializers.ValidationError({"password":"password는  2자 이상 특수문자 포함 "})
+
+        return data
+    
     def validate_old_password(self, data): # 현재 비번 확인 
         user = self.context['request'].user # 로그인한 유저 정보 가져오기
         if not user.check_password(data): # 로그인한 유저의 비번이 아니라면
             raise serializers.ValidationError({"old_password": "기존 비밀번호가 아닙니다"})
-        return data
-
-    def validate_password(self, data):
-        password_regex = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
-        if not password_regex.match(data):
-            raise serializers.ValidationError({"password":"패스워드 형식이 올바르지 않습니다."})
-        elif data['password'] != data['password2']:
-            raise serializers.ValidationError({"password":"패스워드가 일치하지 않습니다."})
         return data
 
     def update(self, instance, validated_data):
@@ -253,19 +240,23 @@ class MypageOrganizationProfileEditSerializer(serializers.ModelSerializer): # (�
         model = Organization
         fields = ('email', 'nickname', 'old_password', 'password', 'password_check')
 
-    def validate_email(self, data):
-        email_regex = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-        if not email_regex.match(data):
-            raise ValidationError({"email":"이메일 형식이 올바르지 않습니다."})
-        elif Organization.objects.filter(email=data["email"]).exists():
-            raise serializers.ValidationError({"email":"중복된 이메일이 있습니다."})
-        return data
+    def validate(self, data):
+        
+        email = data["email"]
+        email_validation = re.compile(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+        password = all(x not in ["!", "@", "#", "$", "%", "^", "&", "*", "_"] for x in data["password"])
+        if not email_validation.fullmatch(email) :
+            raise serializers.ValidationError({"email":"이메일 형식을 확인해주세요"})
 
-    def validate_nickname(self, data):
+        if Organization.objects.filter(nickname=data["nickname"]).exists():
+                raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+        
         if len(data["nickname"]) < 2:
             raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})
-        if Organization.objects.filter(nickname=data["nickname"]).exists():
-            raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+
+        elif len(data["password"]) < 2 or password:
+            raise serializers.ValidationError({"password":"password는  2자 이상 특수문자 포함 "})
+
         return data
 
     def validate_old_password(self, data): # 현재 비번 확인 
@@ -274,13 +265,7 @@ class MypageOrganizationProfileEditSerializer(serializers.ModelSerializer): # (�
             raise serializers.ValidationError({"old_password": "기존 비밀번호가 아닙니다"})
         return data
 
-    def validate_password(self, data):
-        password_regex = re.compile('^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$')
-        if not password_regex.match(data):
-            raise serializers.ValidationError({"password":"패스워드 형식이 올바르지 않습니다."})
-        elif data['password'] != data['password2']:
-            raise serializers.ValidationError({"password": "패스워드가 일치하지 않습니다."})
-        return data
+
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email', instance.email)

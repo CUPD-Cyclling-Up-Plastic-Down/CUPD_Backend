@@ -6,7 +6,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Consumer, Organization
 from .serializers import (
-    SignUpConsumererializer, SignUpOrganizationSerializer, MypageConsumerInfoSerializer, 
+    SignUpConsumerSerializer, SignUpOrganizationSerializer, MypageConsumerInfoSerializer, 
     MypageOrganizationInfoSerializer, MyTokenObtainPairSerializer, MypageEcoprogramAppliedSerializer, 
     MypageEcoprogramConfirmedSerializer, MypageEcoprogramLikeSerializer, MypageEcoprogramCreatedSerializer, 
     MypageEcoprogramApproveRejectSerializer, MypageConsumerProfileEditSerializer, MypageOrganizationProfileEditSerializer
@@ -21,8 +21,8 @@ from upcyclings.serializers import UpcyclingCompanyManagementSerializer
 class SignUpConsumerView(APIView):
 
     def post(self, request):
-        serializer = SignUpConsumererializer(data=request.data)
-        if serializer.is_valid(raise_exception=True): # raise_exception=True는 유효성 검사시 에러 메세지를 가시적으로 클라이언트 측에 전달하는 역할
+        serializer = SignUpConsumerSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response({"msg":"(소비자) 회원가입이 완료되었습니다."}, status=status.HTTP_201_CREATED)
         else:
