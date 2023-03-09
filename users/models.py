@@ -86,8 +86,6 @@ class Consumer(User):
         proxy = True
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            self.type = User.Types.CONSUMER
         return super().save(*args, **kwargs)
     
 
@@ -104,8 +102,6 @@ class Organization(User):
         proxy = True
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            self.type = User.Types.ORGANIZATION
         return super().save(*args, **kwargs)
 
 

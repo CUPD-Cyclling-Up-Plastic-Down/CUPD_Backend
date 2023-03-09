@@ -59,10 +59,10 @@ class SignUpConsumerSerializer(serializers.ModelSerializer):
 # 회원가입(환경단체)
 
 class SignUpOrganizationSerializer(serializers.ModelSerializer):
-    email = serializers.SerializerMethodField()
-    password = serializers.SerializerMethodField()
+    email = serializers.CharField()
+    password = serializers.CharField()
     password2 = serializers.CharField()
-    nickname = serializers.SerializerMethodField()
+    nickname = serializers.CharField()
 
     class Meta:
         model = Organization
@@ -264,8 +264,6 @@ class MypageOrganizationProfileEditSerializer(serializers.ModelSerializer): # (�
         if not user.check_password(data): # 로그인한 유저의 비번이 아니라면
             raise serializers.ValidationError({"old_password": "기존 비밀번호가 아닙니다"})
         return data
-
-
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email', instance.email)
