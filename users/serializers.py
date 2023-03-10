@@ -37,6 +37,9 @@ class SignUpConsumerSerializer(serializers.ModelSerializer):
 
         elif len(data["password"]) < 2 or password:
             raise serializers.ValidationError({"password":"password는  2자 이상 특수문자 포함 "})
+        
+        elif self.password != self.password2 :
+            raise serializers.ValidationError({"password":"password가 일치하지 않습니다."})
 
         return data
 
