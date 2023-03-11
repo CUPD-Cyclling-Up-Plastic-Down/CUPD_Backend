@@ -60,12 +60,11 @@ class SignUpConsumerSerializer(serializers.ModelSerializer):
 class SignUpOrganizationSerializer(serializers.ModelSerializer):
     email = serializers.CharField()
     password = serializers.CharField()
-    password2 = serializers.CharField()
     nickname = serializers.CharField()
 
     class Meta:
         model = Organization
-        fields = "__all__"
+        fields = ("type", "nickname", "email", "password")
 
     def validate(self, data):
         
