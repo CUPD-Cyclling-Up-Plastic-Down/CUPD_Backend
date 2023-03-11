@@ -14,12 +14,11 @@ from upcyclings.serializers import UpcyclingCompanyManagementSerializer
 class SignUpConsumerSerializer(serializers.ModelSerializer):
     email = serializers.CharField()
     password = serializers.CharField()
-    password2 = serializers.CharField()
     nickname = serializers.CharField()
 
     class Meta:
         model = Consumer
-        fields = ("type", "nickname", "email", "password", "password2")
+        fields = ("type", "nickname", "email", "password")
 
     def validate(self, data):
         
@@ -38,9 +37,6 @@ class SignUpConsumerSerializer(serializers.ModelSerializer):
         elif len(data["password"]) < 2 or password:
             raise serializers.ValidationError({"password":"password는  2자 이상 특수문자 포함 "})
         
-        elif self.password != self.password2 :
-            raise serializers.ValidationError({"password":"password가 일치하지 않습니다."})
-
         return data
 
     def create(self, validated_data):

@@ -48,7 +48,6 @@ class User(AbstractBaseUser):
     profile_image = models.ImageField(default='/default_profile/default.PNG', upload_to=rename_imagefile_to_uuid)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    password2 = models.CharField(max_length=20)
     objects = UserManager()
     USERNAME_FIELD = 'email'
     # REQUIRED_FIELDS = ['']
