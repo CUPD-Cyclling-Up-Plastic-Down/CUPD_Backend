@@ -117,7 +117,7 @@ class EcoprogramDetailApplyView(APIView): # 해당 프로그램 상세 페이지
 
 class EcoprogramEnrollView(APIView): # 프로그램 추가 등록
 
-    def post(self, request, ecoprogram_id):
+    def post(self, request):
         serializer = EcoprogramSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
