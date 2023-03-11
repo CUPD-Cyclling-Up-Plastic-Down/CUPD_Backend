@@ -15,9 +15,18 @@ class EcoprogramReviewSerializer(serializers.ModelSerializer):
         fields = ('id','user_id', 'user', 'content', 'profile_image', 'created_at', 'updated_at',)
 
 
- # 리뷰 작성(POST) 및 수정(PUT)
+ # 리뷰 작성(POST)
 
 class EcoprogramReviewCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = ('content')
+
+
+ # 리뷰 수정(PUT)
+
+class EcoprogramReviewEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
@@ -55,7 +64,7 @@ class EcoprogramListSerializer(serializers.ModelSerializer):
         fields = ('title', 'content', 'host', 'location', 'ecoprogram_image', 'likes', 'views', 'organization', 'due_date',)
 
 
- # 특정 에코프로그램 상세 (조회, 등록, 수정)
+ # 특정 에코프로그램 상세 (조회)
 
 class EcoprogramSerializer(serializers.ModelSerializer):
     host = serializers.SerializerMethodField()
@@ -84,5 +93,21 @@ class EcoprogramSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ecoprogram
         fields = "__all__"
+
+
+# 에코프로그램 등록
+
+class EcoprogramEnrollSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ecoprogram
+        fields = ("host", "ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2",)
+
+
+# 에코프로그램 수정
+
+class EcoprogramEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ecoprogram
+        fields = ("host", "ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2",)
 
 
