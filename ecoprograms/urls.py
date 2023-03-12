@@ -15,7 +15,10 @@ urlpatterns = [
         name='ecoprogram_view'), # 전체 프로그램 조회
     
     path('<int:ecoprogram_id>/', views.EcoprogramDetailView.as_view(), 
-        name='ecoprogram_detail_view'), # 해당 프로그램 상세 페이지 (조회, 수정, 삭제)
+        name='ecoprogram_detail_view'), # 해당 프로그램 상세 페이지 (조회)
+
+    path('<int:ecoprogram_id>/', views.EcoprogramEditView.as_view(), 
+        name='ecoprogram_detail_view'), # 해당 프로그램 상세 페이지 (수정, 삭제)
 
     path('<int:ecoprogram_id>/like/', views.EcoprogramDetailLikeView.as_view(), 
         name='ecoprogram_detail_like_view'), # 해당 에코프로그램 '좋아요'

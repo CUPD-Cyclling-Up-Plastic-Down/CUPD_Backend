@@ -51,7 +51,7 @@ class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 수정 및 삭제
 
 # 에코프로그램
 
-class EcoproramView(APIView): # 전체 프로그램 조회
+class EcoproramView(APIView): # 전체 에코프로그램 조회
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
@@ -59,12 +59,44 @@ class EcoproramView(APIView): # 전체 프로그램 조회
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EcoprogramDetailView(APIView): # 해당 프로그램 상세 페이지 (조회)
+class EcoprogramEnrollView(APIView): # 에코프로그램 (등록)
+
+    def post(self, request):
+        serializer = EcoprogramEnrollSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK) 
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EcoprogramDetailView(APIView): # 해당 에코프로그램 상세 페이지 (조회)
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
         serializer = EcoprogramSerializer(ecoprogram)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class EcoprogramEditView(APIView): # 해당 에코프로그램 (수정, 삭제)
+
+    def patch(self, request, ecoprogram_id):
+        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
+        if request.user == ecoprogram.host:
+            serializer = EcoprogramEditSerializer(ecoprogram, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+    def delete(self, request, ecoprogram_id):
+        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
+        if request.user == ecoprogram.host: 
+            ecoprogram.delete()
+            return Response({"msg":"게시물이 삭제되었습니다."},status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
 
 class EcoprogramDetailLikeView(APIView): # 해당 프로그램 '좋아요'
@@ -96,39 +128,3 @@ class EcoprogramDetailApplyView(APIView): # 해당 프로그램 상세 페이지
             else: 
                 EcoprogramApply.objects.create(guest=request.user, ecoprogram=ecoprogram, result='WAITING')
                 return Response({"msg":"에코프로그램 신청을 접수했습니다."}, status=status.HTTP_200_OK)
-
-
-class EcoprogramEnrollView(APIView): # 에코프로그램 등록
-
-    def post(self, request):
-        serializer = EcoprogramEnrollSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK) 
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-
-class EcoprogramEditView(APIView): # 에코프로그램 수정, 삭제
-
-    def patch(self, request, ecoprogram_id):
-        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
-        if request.user == ecoprogram.host:
-            serializer = EcoprogramEditSerializer(ecoprogram, data=request.data)
-            if serializer.is_valid(): 
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK) 
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
-    def delete(self, request, ecoprogram_id):
-        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
-        if request.user == ecoprogram.host: 
-            ecoprogram.delete()
-            return Response({"msg":"게시물이 삭제되었습니다."},status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
-
-
-
-
