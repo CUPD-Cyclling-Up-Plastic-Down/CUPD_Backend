@@ -9,7 +9,7 @@ from .serializers import (EcoprogramReviewSerializer, EcoprogramReviewCreateSeri
 
 # 에코프로그램 리뷰 
 
-class EcoprogramReviewView(APIView): # 리뷰 전체보기
+class EcoprogramReviewView(APIView): # 리뷰 전체 (조회)
 
     def get(self, request, ecoprogram_id):
         review = get_object_or_404(Review, id=ecoprogram_id)
@@ -17,7 +17,7 @@ class EcoprogramReviewView(APIView): # 리뷰 전체보기
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EcoprogramReviewCreateView(APIView): # 리뷰 등록
+class EcoprogramReviewCreateView(APIView): # 리뷰 (등록)
 
     def post(self, request, ecoprogram_id):
         serializer = EcoprogramReviewCreateSerializer(data=request.data)
@@ -28,7 +28,7 @@ class EcoprogramReviewCreateView(APIView): # 리뷰 등록
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 수정 및 삭제
+class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 (수정, 삭제)
     
     def put(self, request, ecoprogram_id): 
         reviews = get_object_or_404(Review, id=ecoprogram_id)
@@ -51,7 +51,7 @@ class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 수정 및 삭제
 
 # 에코프로그램
 
-class EcoproramView(APIView): # 전체 에코프로그램 조회
+class EcoproramView(APIView): # 전체 에코프로그램 (조회)
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
