@@ -170,7 +170,7 @@ class MypageConsumerProfileEditSerializer(serializers.ModelSerializer): # (소�
             raise serializers.ValidationError({"email":"이메일 형식을 확인해주세요"})
 
         if Consumer.objects.filter(nickname=data["nickname"]).exists():
-                raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
+            raise serializers.ValidationError({"nickname":"중복된 닉네임이 있습니다."})
         
         if len(data["nickname"]) < 2:
             raise serializers.ValidationError({"nickname":"nickname을 두 글자 이상 작성해주세요."})

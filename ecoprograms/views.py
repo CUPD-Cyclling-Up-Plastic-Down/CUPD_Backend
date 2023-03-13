@@ -70,16 +70,13 @@ class EcoprogramEnrollView(APIView): # 에코프로그램 (등록)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EcoprogramDetailView(APIView): # 해당 에코프로그램 상세 페이지 (조회)
+class EcoprogramDetailView(APIView): # 해당 에코프로그램 상세 페이지 (조회, 수정, 삭제)
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
         serializer = EcoprogramSerializer(ecoprogram)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-
-class EcoprogramEditView(APIView): # 해당 에코프로그램 (수정, 삭제)
-
     def patch(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
         if request.user == ecoprogram.host:
@@ -89,7 +86,9 @@ class EcoprogramEditView(APIView): # 해당 에코프로그램 (수정, 삭제)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+        else:
+            return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
+
     def delete(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
         if request.user == ecoprogram.host: 
