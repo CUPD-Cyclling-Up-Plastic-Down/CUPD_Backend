@@ -21,7 +21,7 @@ class EcoprogramReviewCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('content')
+        fields = ('content',)
 
 
  # 리뷰 수정(PUT)
@@ -30,7 +30,7 @@ class EcoprogramReviewEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('content')
+        fields = ('content',)
 
 
  # 에코프로그램 신청
@@ -98,16 +98,18 @@ class EcoprogramSerializer(serializers.ModelSerializer):
 # 에코프로그램 등록
 
 class EcoprogramEnrollSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Ecoprogram
-        fields = ("host", "ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2",)
+        fields = ("host", "ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2", "organization")
 
 
 # 에코프로그램 수정
 
 class EcoprogramEditSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Ecoprogram
-        fields = ("host", "ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2",)
+        fields = ("host", "ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2", "organization")
 
 

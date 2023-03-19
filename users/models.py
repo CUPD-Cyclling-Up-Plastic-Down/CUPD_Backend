@@ -45,7 +45,7 @@ class User(AbstractBaseUser):
     type = models.CharField(_('Type'), max_length=15, choices=Types.choices)
     email = models.EmailField("이메일", max_length=100, unique=True,)
     nickname = models.CharField("닉네임", max_length=10, unique=True,)
-    profile_image = models.ImageField(default='/default_profile/default.PNG', upload_to=rename_imagefile_to_uuid)
+    profile_image = models.ImageField(default='/default_profile/default.PNG', upload_to=rename_imagefile_to_uuid, null=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     objects = UserManager()
@@ -71,6 +71,8 @@ class User(AbstractBaseUser):
         # Simplest possible answer: All admins are staff
         return self.is_admin
 
+
+# 프록시 모델 생성
 
 class ConsumerManager(models.Manager):
     
