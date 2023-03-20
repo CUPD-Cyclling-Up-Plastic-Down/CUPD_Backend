@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.generics import get_object_or_404 
 from .models import Ecoprogram, Review, EcoprogramApply
 from .serializers import (EcoprogramReviewSerializer, EcoprogramReviewCreateSerializer, EcoprogramSerializer,
-                        EcoprogramListSerializer, EcoprogramEnrollSerializer, EcoprogramEditSerializer)
+                        EcoprogramListSerializer, EcoprogramEnrollSerializer, EcoprogramEditSerializer, EcoprogramReviewEditSerializer)
 
 
 # 에코프로그램 리뷰 
@@ -12,7 +12,8 @@ from .serializers import (EcoprogramReviewSerializer, EcoprogramReviewCreateSeri
 class EcoprogramReviewView(APIView): # 리뷰 전체 (조회)
 
     def get(self, request, ecoprogram_id):
-        review = get_object_or_404(Review, id=ecoprogram_id)
+        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
+        review = ecoprogram.review_ecoprogram.all()
         serializer = EcoprogramReviewSerializer(review, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -30,20 +31,22 @@ class EcoprogramReviewCreateView(APIView): # 리뷰 (등록)
 
 class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 (수정, 삭제)
     
-    def put(self, request, ecoprogram_id): 
-        reviews = get_object_or_404(Review, id=ecoprogram_id)
-        if request.user == reviews.user:
-            serializer = EcoprogramReviewCreateSerializer(reviews, data=request.data) 
+    def put(self, request, ecoprogram_id, review_id):
+        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
+        review = get_object_or_404(Review, id=review_id)
+        if request.user == review.user:
+            serializer = EcoprogramReviewEditSerializer(review, data=request.data) 
             if serializer.is_valid(): 
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK) 
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, ecoprogram_id):
-        reviews = get_object_or_404(Review, id=ecoprogram_id)
-        if request.user == reviews.user:
-            reviews.delete()
+    def delete(self, request, ecoprogram_id, review_id):
+        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
+        review = get_object_or_404(Review, id=review_id)
+        if request.user == review.user:
+            review.delete()
             return Response({"msg":"해당 리뷰가 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)

@@ -8,7 +8,7 @@ urlpatterns = [
     path('<int:ecoprogram_id>/review/create/', views.EcoprogramReviewCreateView.as_view(), 
         name='ecoprogram_review_create_view'), # 리뷰 (등록)
 
-    path('<int:ecoprogram_id>/review/<int:review_id>', views.EcoprogramReviewDetailView.as_view(), 
+    path('<int:ecoprogram_id>/review/<int:review_id>/', views.EcoprogramReviewDetailView.as_view(), 
         name='ecoprogram_review_detail_view'), # 작성한 리뷰 (수정, 삭제)
 
     path('', views.EcoproramView.as_view(), 
