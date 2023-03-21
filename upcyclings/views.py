@@ -42,10 +42,10 @@ class UpcyclingCompanyDetailView(APIView): # 해당 업사이클링 업체 상�
 
 class UpcyclingCompanyEnrollView(APIView): # 업사이클링 업체 (등록)
 
-    def post(self, request, company_id):
+    def post(self, request):
         serializer = UpcyclingCompanyEnrollSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user, company_id=company_id)
+            serializer.save(registrant=request.user)
             return Response(serializer.data, status=status.HTTP_200_OK) 
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

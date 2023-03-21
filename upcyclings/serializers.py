@@ -25,11 +25,10 @@ class UpcyclingCompanySerializer(serializers.ModelSerializer): # 해당 업사�
 
 
 class UpcyclingCompanyEnrollSerializer(serializers.ModelSerializer): # 업사이클링 업체 (등록)
-    plastic = UpcyclingPlasticSerializer(many=True)
 
     class Meta:
         model = UpcyclingCompany
-        fields = "__all__"
+        fields = ('company', 'company_image', 'location', 'contact_number')
 
 
 class UpcyclingCompanyManagementSerializer(serializers.ModelSerializer):
