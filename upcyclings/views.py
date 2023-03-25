@@ -8,16 +8,16 @@ from .serializers import UpcyclingCompanyListSerializer, UpcyclingCompanySeriali
 
 class UpcyclingCompanyListView(APIView): # 전체 업사이클링 업체 조회
 
-    def get(self, request, company_id):
-        upcyclingcompany = get_object_or_404(UpcyclingCompany, id=company_id)
+    def get(self, request):
+        upcyclingcompany = UpcyclingCompany.objects.all()
         serializer = UpcyclingCompanyListSerializer(upcyclingcompany, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UpcyclingCompanyDetailView(APIView): # 해당 업사이클링 업체 상세 페이지 (조회, 수정, 삭제)
 
-    def get(self, request, company_id):
-        upcyclingcompany = get_object_or_404(UpcyclingCompany, id=company_id)
+    def get(self, request, upcyclingcompany_id):
+        upcyclingcompany = get_object_or_404(UpcyclingCompany, id=upcyclingcompany_id)
         serializer = UpcyclingCompanySerializer(upcyclingcompany)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

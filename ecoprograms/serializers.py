@@ -44,24 +44,24 @@ class EcoprogramApplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EcoprogramApply
-        fields = ('id', 'ecoprogram_id', 'guest', 'guest_nickname', 'ecoprogram', 'result', 'created_at',)
+        fields = ('ecoprogram_id', 'guest', 'guest_nickname', 'ecoprogram', 'result', 'created_at',)
 
 
  # 에코프로그램 전체 리스트 조회
 
 class EcoprogramListSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
-    date = serializers.SerializerMethodField()
+    due_date = serializers.SerializerMethodField()
 
     def get_location(self, obj):
         return obj.location.district
 
-    def get_date(self, obj):
-        return obj.date.strftime('%Y년 %m월 %d일 %A')
+    def get_due_date(self, obj):
+        return obj.due_date.strftime('%Y년 %m월 %d일 %A')
 
     class Meta:
         model = Ecoprogram
-        fields = ('title', 'content', 'host', 'location', 'ecoprogram_image', 'likes', 'views', 'organization', 'due_date',)
+        fields = ('id', 'title', 'content', 'host', 'location', 'ecoprogram_image', 'likes', 'views', 'organization', 'due_date',)
 
 
  # 특정 에코프로그램 상세 (조회)
@@ -101,7 +101,7 @@ class EcoprogramEnrollSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ecoprogram
-        fields = ("host", "ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2", "organization")
+        fields = ("ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2", "organization")
 
 
 # 에코프로그램 수정

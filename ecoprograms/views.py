@@ -56,8 +56,8 @@ class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 (수정, 삭제)
 
 class EcoproramView(APIView): # 전체 에코프로그램 (조회)
 
-    def get(self, request, ecoprogram_id):
-        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
+    def get(self, request):
+        ecoprogram = get_object_or_404(Ecoprogram)
         serializer = EcoprogramListSerializer(ecoprogram, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -67,7 +67,7 @@ class EcoprogramEnrollView(APIView): # 에코프로그램 (등록)
     def post(self, request):
         serializer = EcoprogramEnrollSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(host=request.user)
             return Response(serializer.data, status=status.HTTP_200_OK) 
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -117,7 +117,6 @@ class EcoprogramDetailApplyView(APIView): # 해당 프로그램 상세 페이지
 
     def post(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
-        print(ecoprogram.host)
         if request.user == ecoprogram.host: 
             return Response({"msg":"해당 ecoprogram의 host는 참가신청할 수 없습니다."}, status=status.HTTP_403_FORBIDDEN)
         elif request.user != ecoprogram.host: 
