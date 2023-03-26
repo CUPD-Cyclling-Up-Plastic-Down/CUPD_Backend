@@ -23,10 +23,16 @@ urlpatterns = [
         name='mypage_consumer_profile_edit_view'), # 프로필 정보 (수정)
     
     path('consumer/<int:user_id>/applied/', views.MypageEcoprogramAppliedView.as_view(), 
-        name='mypage_ecoprogram_applied_view'), # 신청한 에코프로그램 (조회, 삭제)
+        name='mypage_ecoprogram_applied_view'), # 신청한 에코프로그램 전체 (조회)
+
+    path('consumer/<int:user_id>/applied/<int:ecoprogram_apply_id>/', views.MypageEcoprogramAppliedDetailView.as_view(), 
+        name='mypage_ecoprogram_applied_detail_view'), # 신청한 에코프로그램 개별 (조회, 삭제)
     
     path('consumer/<int:user_id>/confirmed/', views.MypageEcoprogramConfirmedView.as_view(), 
-        name='mypage_ecoprogram_confirmed_view'), # 참여확정된 에코프로그램 (조회, 삭제)
+        name='mypage_ecoprogram_confirmed_view'), # 참여확정된 에코프로그램 전체 (조회, 삭제)
+
+    path('consumer/<int:user_id>/confirmed/<int:ecoprogram_apply_id>/', views.MypageEcoprogramConfirmedDetailView.as_view(), 
+        name='mypage_ecoprogram_confirmed_detail_view'), # 참여확정된 에코프로그램 개별 (조회, 삭제)
     
     path('consumer/<int:user_id>/likes/', views.MypageEcoprogramLikeView.as_view(), 
         name='mypage_ecoprogram_like_view'), # 좋아요한 에코프로그램 (조회)

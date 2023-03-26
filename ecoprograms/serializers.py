@@ -64,6 +64,18 @@ class EcoprogramListSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'content', 'host', 'location', 'ecoprogram_image', 'likes', 'views', 'organization', 'due_date',)
 
 
+# 에코프로그램 정보 요약
+
+class EcoprogramSummarySerializer(serializers.ModelSerializer):
+    participant_counts = serializers.SerializerMethodField()
+    
+    def get_participant_counts(self, obj):
+        return obj.participant.count()
+
+    class Meta:
+        model : Ecoprogram
+        fields = ('title', 'host', 'location', 'due_date', 'cost', 'max_guest', 'participant_counts')
+
  # 특정 에코프로그램 상세 (조회)
 
 class EcoprogramSerializer(serializers.ModelSerializer):

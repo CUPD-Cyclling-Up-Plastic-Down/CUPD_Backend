@@ -3,8 +3,8 @@ from rest_framework import serializers
 from users.models import Consumer, Organization
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from ecoprograms.serializers import EcoprogramSerializer, EcoprogramApplySerializer
-from ecoprograms.models import Ecoprogram
+from ecoprograms.serializers import EcoprogramSerializer, EcoprogramApplySerializer, EcoprogramSummarySerializer
+from ecoprograms.models import Ecoprogram, EcoprogramApply
 from upcyclings.models import UpcyclingCompany
 from upcyclings.serializers import UpcyclingCompanyManagementSerializer
 
@@ -126,21 +126,29 @@ class MypageEcoprogramLikeSerializer(serializers.ModelSerializer):  # (소비자
     
     class Meta:
         model = Ecoprogram
-        fields = ( 'pk', 'title', 'ecoprogram_image', 'location', 'address2', 'likes')
+        fields = ( 'id', 'title', 'ecoprogram_image', 'location', 'address2', 'likes')
 
 
 class MypageEcoprogramAppliedSerializer(serializers.ModelSerializer): # (소비자): 신청한 에코프로그램
-    
+    ecoprogram = serializers.SerializerMethodField()
+
+    def get_ecoprogram(self, obj):
+        return obj.ecoprogram.title
+
     class Meta:
-        model = Ecoprogram
-        fields = ('title', 'due_date', 'result', 'created_at', 'updated_at')
+        model = EcoprogramApply
+        fields = ('ecoprogram', 'result', 'created_at')
 
 
 class MypageEcoprogramConfirmedSerializer(serializers.ModelSerializer): # (소비자): 참여확정된 에코프로그램
+    ecoprogram = serializers.SerializerMethodField()
+
+    def get_ecoprogram(self, obj):
+        return obj.ecoprogram.title
     
     class Meta:
-        model = Ecoprogram
-        fields = ('title', 'due_date', 'result', 'created_at', 'updated_at')
+        model = EcoprogramApply
+        fields = ('ecoprogram', 'result', 'created_at')
 
 
 class MypageConsumerInfoSerializer(serializers.ModelSerializer): # (소비자): 프로필 정보 불러오기
