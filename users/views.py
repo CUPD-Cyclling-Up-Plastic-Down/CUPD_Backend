@@ -117,14 +117,16 @@ class MypageEcoprogramConfirmedDetailView(APIView): # (소비자): 참여확정�
 
     def get(self, request, user_id, ecoprogram_apply_id):
         user = get_object_or_404(User, id=user_id)
-        confirmed_ecoprogram = user.ecoprogram_apply_guest.filter(id=ecoprogram_apply_id) # 수정 예정
-        print(confirmed_ecoprogram)
+        confirmed_ecoprograms = user.ecoprogram_apply_guest.filter(result='APPROVE')
+        confirmed_ecoprogram = confirmed_ecoprograms.get(id=ecoprogram_apply_id)
         serializer = MypageEcoprogramConfirmedSerializer(confirmed_ecoprogram)
         return Response(serializer.data, status=status.HTTP_200_OK)
+            
 
     def delete(self, request, user_id, ecoprogram_apply_id):
         user = get_object_or_404(User, id=user_id)
-        confirmed_ecoprogram = user.ecoprogram_apply_guest.filter(result='APPROVE', id=ecoprogram_apply_id)
+        confirmed_ecoprograms = user.ecoprogram_apply_guest.filter(result='APPROVE')
+        confirmed_ecoprogram = confirmed_ecoprograms.get(id=ecoprogram_apply_id)
         if request.user == user:
             confirmed_ecoprogram.delete()
             return Response({"msg":"삭제 되었습니다."}, status=status.HTTP_204_NO_CONTENT)

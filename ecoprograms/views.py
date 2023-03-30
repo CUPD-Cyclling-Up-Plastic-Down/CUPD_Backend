@@ -57,7 +57,8 @@ class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 (수정, 삭제)
 class EcoproramView(APIView): # 전체 에코프로그램 (조회)
 
     def get(self, request):
-        ecoprogram = get_object_or_404(Ecoprogram)
+        ecoprogram = Ecoprogram.objects.all()
+        print(ecoprogram)
         serializer = EcoprogramListSerializer(ecoprogram, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
