@@ -154,7 +154,7 @@ class MypageOrganizationInfoView(APIView): # (환경단체): 프로필 정보 (�
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
         serializer = MypageOrganizationInfoSerializer(user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
@@ -176,19 +176,29 @@ class MypageOrganizationProfileEditView(APIView): # (환경단체): 프로필 �
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class MypageEcoprogramCreatedView(APIView): # (환경단체): 생성한 에코프로그램 (조회, 삭제)
+class MypageEcoprogramCreatedView(APIView): # (환경단체): 생성한 에코프로그램 전체 (조회)
     
-    def get(self, request, user_id): # 조회
+    def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
-        serializer = MypageEcoprogramCreatedSerializer(user, many=True)
-        if request.data['host'] == request.user:
-            return Response(serializer.data)
+        created_ecoprogram = user.ecoprogram_host.all()
+        serializer = MypageEcoprogramCreatedSerializer(created_ecoprogram, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def delete(self, request, host_id): # 삭제
-        host = get_object_or_404(Ecoprogram, id=host_id)
-        if request.user == host:
-            host.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+
+class MypageEcoprogramCreatedDetailView(APIView): # (환경단체): 생성한 에코프로그램 개별 (조회, 삭제)
+    
+    def get(self, request, user_id, ecoprogram_id):
+        user = get_object_or_404(User, id=user_id)
+        created_ecoprogram = user.ecoprogram_host.get(id=ecoprogram_id)
+        serializer = MypageEcoprogramCreatedSerializer(created_ecoprogram)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, user_id, ecoprogram_id):
+        user = get_object_or_404(User, id=user_id)
+        created_ecoprogram = user.ecoprogram_host.get(id=ecoprogram_id)
+        if request.user == user:
+            created_ecoprogram.delete()
+            return Response({"msg":"삭제 되었습니다."}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
@@ -212,7 +222,7 @@ class MypageEcoprogramApproveRejectView(APIView): # (환경단체): 해당 에�
         else:
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
-    def delete(self, request, guest_id): # (환경단체): 해당 에코프로그램 신청 인원 (삭제)
+    def delete(self, request, guest_id):
         guest = get_object_or_404(EcoprogramApply, id=guest_id)
         guest.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

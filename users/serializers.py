@@ -126,7 +126,7 @@ class MypageEcoprogramLikeSerializer(serializers.ModelSerializer):  # (소비자
     
     class Meta:
         model = Ecoprogram
-        fields = ( 'id', 'title', 'ecoprogram_image', 'location', 'address2', 'likes')
+        fields = ( 'id', 'host', 'title', 'ecoprogram_image', 'location', 'address2', 'likes')
 
 
 class MypageEcoprogramAppliedSerializer(serializers.ModelSerializer): # (소비자): 신청한 에코프로그램
@@ -167,7 +167,7 @@ class MypageConsumerProfileEditSerializer(serializers.ModelSerializer): # (소�
 
     class Meta:
         model = Consumer
-        fields = ('email', 'nickname', 'old_password', 'password', 'password_check')
+        fields = ('email', 'nickname', 'old_password', 'password',)
 
     def validate(self, data):
         
@@ -209,7 +209,7 @@ class MypageEcoprogramCreatedSerializer(serializers.ModelSerializer): # (환경�
     
     class Meta:
         model = Ecoprogram
-        fields = ('title', 'due_date', 'result', 'host', 'created_at', 'updated_at', 'participant', 'max_guest')
+        fields = ('title', 'due_date', 'host', 'created_at', 'updated_at', 'participant', 'max_guest')
 
 
 class MypageEcoprogramApproveRejectSerializer(serializers.ModelSerializer): # (환경단체): 해당 에코프로그램 신청 인원 (조회)
@@ -228,13 +228,10 @@ class MypageUpcyclingCompanyManagementSerializer(serializers.ModelSerializer): #
 
 
 class MypageOrganizationInfoSerializer(serializers.ModelSerializer): # (환경단체): 프로필 정보(조회)
-    ecoprogram_host = EcoprogramSerializer(many=True)
-    ecoprogram_create = MypageEcoprogramCreatedSerializer(many=True)
-    upcyclingcompany_registrant = UpcyclingCompanyManagementSerializer(many=True)
-    
+
     class Meta:
         model = Organization
-        fields = ('nickname', 'email', 'profile_image', 'ecoprogram_host', 'ecoprogram_create', 'upcyclingcompany_registrant')
+        fields = ('nickname', 'email', 'profile_image',)
 
 
 class MypageOrganizationProfileEditSerializer(serializers.ModelSerializer): # (환경단체): 프로필 정보(수정)
@@ -244,7 +241,7 @@ class MypageOrganizationProfileEditSerializer(serializers.ModelSerializer): # (�
 
     class Meta:
         model = Organization
-        fields = ('email', 'nickname', 'old_password', 'password', 'password_check')
+        fields = ('email', 'nickname', 'old_password', 'password')
 
     def validate(self, data):
         

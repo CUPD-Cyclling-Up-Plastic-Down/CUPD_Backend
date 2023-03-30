@@ -45,7 +45,10 @@ urlpatterns = [
         name='mypage_organization_profile_edit_view'), # 프로필 정보 (수정)
 
     path('organization/<int:user_id>/ecoprogram/created/', views.MypageEcoprogramCreatedView.as_view(), 
-        name='mypage_ecoprogram_created_view'), # 생성한 에코프로그램 (조회, 삭제)
+        name='mypage_ecoprogram_created_view'), # 생성한 에코프로그램 전체 (조회)
+    
+    path('organization/<int:user_id>/ecoprogram/created/<int:ecoprogram_id>/', views.MypageEcoprogramCreatedDetailView.as_view(), 
+        name='mypage_ecoprogram_created_detail_view'), # 생성한 에코프로그램 개별 (조회, 삭제)
 
     path('organization/<int:user_id>/ecoprogram/created/<int:ecoprogram_id>/', views.MypageEcoprogramApproveRejectView.as_view(), 
         name='mypage_ecoprogram_approve_rejection_view'), # 해당 에코프로그램 신청 인원 (조회, 처리)
