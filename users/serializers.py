@@ -3,7 +3,7 @@ from rest_framework import serializers
 from users.models import Consumer, Organization
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from ecoprograms.serializers import EcoprogramSerializer, EcoprogramApplySerializer, EcoprogramSummarySerializer
+from ecoprograms.serializers import EcoprogramApplySerializer, EcoprogramApplyResultSerializer
 from ecoprograms.models import Ecoprogram, EcoprogramApply
 from upcyclings.models import UpcyclingCompany
 from upcyclings.serializers import UpcyclingCompanyManagementSerializer
@@ -212,12 +212,12 @@ class MypageEcoprogramCreatedSerializer(serializers.ModelSerializer): # (환경�
         fields = ('title', 'due_date', 'host', 'created_at', 'updated_at', 'participant', 'max_guest')
 
 
-class MypageEcoprogramApproveRejectSerializer(serializers.ModelSerializer): # (환경단체): 해당 에코프로그램 신청 인원 (조회)
-    ecoprogram_apply_guest = EcoprogramApplySerializer(many=True)
+class MypageEcoprogramApproveRejectSerializer(serializers.ModelSerializer): # (환경단체): 해당 에코프로그램 신청 인원 결과 (조회)
+    ecoprogram_apply_guest = EcoprogramApplyResultSerializer
 
     class Meta:
-        model = Organization
-        fields = ('ecoprogram_apply_guest')
+        model = Consumer
+        fields = ('id','nickname','ecoprogram_apply_guest')
 
 
 class MypageUpcyclingCompanyManagementSerializer(serializers.ModelSerializer): # (환경단체): 업체 등록 관리

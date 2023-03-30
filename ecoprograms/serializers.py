@@ -125,3 +125,11 @@ class EcoprogramEditSerializer(serializers.ModelSerializer):
         fields = ("host", "ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2", "organization")
 
 
+# 에코프로그램 신청 결과
+
+class EcoprogramApplyResultSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = EcoprogramApply
+        fields = ('ecoprogram', 'result')
+

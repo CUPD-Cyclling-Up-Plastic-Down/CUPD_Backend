@@ -12,6 +12,7 @@ from .serializers import (
     MypageEcoprogramApproveRejectSerializer, MypageConsumerProfileEditSerializer, MypageOrganizationProfileEditSerializer
 )
 from ecoprograms.models import Ecoprogram, EcoprogramApply
+from ecoprograms.serializers import EcoprogramApplyResultSerializer
 from upcyclings.models import UpcyclingCompany
 from upcyclings.serializers import UpcyclingCompanyManagementSerializer
 
@@ -203,12 +204,14 @@ class MypageEcoprogramCreatedDetailView(APIView): # (환경단체): 생성한 �
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
 
-class MypageEcoprogramApproveRejectView(APIView): # (환경단체): 해당 에코프로그램 신청 인원 (조회, 권한설정)
+class MypageEcoprogramApproveRejectView(APIView): # (환경단체): 해당 에코프로그램 신청 인원 (결과 조회, 권한설정)
 
-    def get(self, request, user_id):
+    def get(self, request, ecoprogram_id, user_id):
         user = get_object_or_404(User, id=user_id)
-        serializer = MypageEcoprogramApproveRejectSerializer(user, many=True)
-        return Response(serializer.data)
+        ecoprogram = user.ecoprogram_host.get(id=ecoprogram_id)
+        participant = ecoprogram.participant.all()
+        serializer = EcoprogramApplyResultSerializer(participant, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, ecoprogram_id): # 권한 설정
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
@@ -233,7 +236,7 @@ class MypageUpcyclingCompanyManagementView(APIView): # (환경단체): 업사이
     def get(self, request, registrant_id):
         registrant = get_object_or_404(UpcyclingCompany, id=registrant_id)
         serializer = UpcyclingCompanyManagementSerializer(registrant)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, registrant_id):
         registrant = get_object_or_404(UpcyclingCompany, id=registrant_id)
