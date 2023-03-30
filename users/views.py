@@ -204,7 +204,7 @@ class MypageEcoprogramCreatedDetailView(APIView): # (환경단체): 생성한 �
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
 
-class MypageEcoprogramApproveRejectView(APIView): # (환경단체): 해당 에코프로그램 신청 인원 (결과 조회, 권한설정)
+class MypageEcoprogramApplyResultView(APIView): # (환경단체): 해당 에코프로그램 신청 인원 (결과 조회, 권한설정)
 
     def get(self, request, ecoprogram_id, user_id):
         user = get_object_or_404(User, id=user_id)
