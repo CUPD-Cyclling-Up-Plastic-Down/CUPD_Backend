@@ -212,12 +212,11 @@ class MypageEcoprogramCreatedSerializer(serializers.ModelSerializer): # (환경�
         fields = ('title', 'due_date', 'host', 'created_at', 'updated_at', 'participant', 'max_guest')
 
 
-class MypageEcoprogramApproveRejectSerializer(serializers.ModelSerializer): # (환경단체): 해당 에코프로그램 신청 인원 결과 (조회)
-    ecoprogram_apply_guest = EcoprogramApplyResultSerializer
+class MypageEcoprogramApplyResultSerializer(serializers.ModelSerializer): # (환경단체): 해당 에코프로그램 신청 인원 결과 (조회)
 
     class Meta:
-        model = Consumer
-        fields = ('id','nickname','ecoprogram_apply_guest')
+        model = EcoprogramApply
+        fields = ('ecoprogram', 'guest', 'result')
 
 
 class MypageUpcyclingCompanyManagementSerializer(serializers.ModelSerializer): # (환경단체): 업체 등록 관리

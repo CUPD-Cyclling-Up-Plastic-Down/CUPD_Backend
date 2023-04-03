@@ -118,7 +118,7 @@ class EcoprogramDetailApplyView(APIView): # 해당 프로그램 상세 페이지
 
     def post(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
-        if request.user == ecoprogram.host: 
+        if request.user == ecoprogram.host:
             return Response({"msg":"해당 ecoprogram의 host는 참가신청할 수 없습니다."}, status=status.HTTP_403_FORBIDDEN)
         elif request.user != ecoprogram.host: 
             max_guest = ecoprogram.max_guest
@@ -128,6 +128,6 @@ class EcoprogramDetailApplyView(APIView): # 해당 프로그램 상세 페이지
             if request.user in ecoprogram.participant.all():
                 ecoprogram.participant.remove(request.user)
                 return Response({"msg":"에코프로그램 신청을 취소했습니다."}, status=status.HTTP_200_OK)
-            else: 
+            else:
                 EcoprogramApply.objects.create(guest=request.user, ecoprogram=ecoprogram, result='WAITING')
                 return Response({"msg":"에코프로그램 신청을 접수했습니다."}, status=status.HTTP_200_OK)

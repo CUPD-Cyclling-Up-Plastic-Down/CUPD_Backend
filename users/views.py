@@ -9,10 +9,9 @@ from .serializers import (
     SignUpConsumerSerializer, SignUpOrganizationSerializer, MypageConsumerInfoSerializer, 
     MypageOrganizationInfoSerializer, MyTokenObtainPairSerializer, MypageEcoprogramAppliedSerializer, 
     MypageEcoprogramConfirmedSerializer, MypageEcoprogramLikeSerializer, MypageEcoprogramCreatedSerializer, 
-    MypageEcoprogramApproveRejectSerializer, MypageConsumerProfileEditSerializer, MypageOrganizationProfileEditSerializer
+    MypageConsumerProfileEditSerializer, MypageOrganizationProfileEditSerializer,MypageEcoprogramApplyResultSerializer
 )
 from ecoprograms.models import Ecoprogram, EcoprogramApply
-from ecoprograms.serializers import EcoprogramApplyResultSerializer
 from upcyclings.models import UpcyclingCompany
 from upcyclings.serializers import UpcyclingCompanyManagementSerializer
 
@@ -209,12 +208,14 @@ class MypageEcoprogramApplyResultView(APIView): # (환경단체): 해당 에코�
     def get(self, request, ecoprogram_id, user_id):
         user = get_object_or_404(User, id=user_id)
         ecoprogram = user.ecoprogram_host.get(id=ecoprogram_id)
-        participant = ecoprogram.participant.all()
-        serializer = MypageEcoprogramApproveRejectSerializer(participant, many=True)
+        applied_ecoprogram = ecoprogram.ecoprogram_apply.all()
+        print(applied_ecoprogram)
+        serializer = MypageEcoprogramApplyResultSerializer(applied_ecoprogram, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, ecoprogram_id): # 권한 설정
-        ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
+    def post(self, request, ecoprogram_id, user_id): # 권한 설정
+        user = get_object_or_404(User, id=user_id)
+        ecoprogram = user.ecoprogram_host.get(id=ecoprogram_id)
         if request.user == ecoprogram.host: 
             guest = request.data['guest']
             result = request.data['result']
