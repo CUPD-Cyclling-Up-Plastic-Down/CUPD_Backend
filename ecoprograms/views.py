@@ -58,7 +58,6 @@ class EcoproramView(APIView): # 전체 에코프로그램 (조회)
 
     def get(self, request):
         ecoprogram = Ecoprogram.objects.all()
-        print(ecoprogram)
         serializer = EcoprogramListSerializer(ecoprogram, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

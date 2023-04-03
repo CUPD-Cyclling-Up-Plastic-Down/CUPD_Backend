@@ -260,7 +260,6 @@ class MypageUpcyclingCompanyManagementDetailView(APIView): # (환경단체): 업
     def get(self, request, user_id, upcyclingcompany_id):
         user = get_object_or_404(User, id=user_id)
         upcyclingcompany = user.upcyclingcompany_registrant.get(id=upcyclingcompany_id)
-        print(upcyclingcompany)
         serializer = UpcyclingCompanyManagementSerializer(upcyclingcompany)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
