@@ -51,7 +51,10 @@ urlpatterns = [
         name='mypage_ecoprogram_created_detail_view'), # 생성한 에코프로그램 개별 (조회, 삭제)
 
     path('organization/<int:user_id>/ecoprogram/<int:ecoprogram_id>/result/', views.MypageEcoprogramApplyResultView.as_view(), 
-        name='mypage_ecoprogram_apply_result_view'), # 해당 에코프로그램 신청 인원 (조회, 처리)
+        name='mypage_ecoprogram_apply_result_view'), # 해당 에코프로그램 신청 결과 (전체 조회, 권한 설정)
+    
+    path('organization/<int:user_id>/ecoprogram/<int:ecoprogram_id>/result/<int:guest_id>/', views.MypageEcoprogramApplyResultDetailView.as_view(), 
+        name='mypage_ecoprogram_apply_result_detail_view'), # 해당 에코프로그램 신청 결과 (개별 조회, 인원 삭제)
 
     path('organization/<int:user_id>/upcyclings/', views.MypageUpcyclingCompanyManagementView.as_view(), 
         name='mypage_upcycling_company_management_view'), # 업사이클링 업체 등록 관리 (조회, 삭제)
