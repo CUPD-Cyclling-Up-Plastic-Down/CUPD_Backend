@@ -35,4 +35,4 @@ class UpcyclingCompanyManagementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UpcyclingCompany
-        fields = ('company', 'registrant')
+        fields = ('registrant', 'company',)

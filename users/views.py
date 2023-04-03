@@ -246,18 +246,30 @@ class MypageEcoprogramApplyResultDetailView(APIView): # (환경단체): 해당 �
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
             
 
-class MypageUpcyclingCompanyManagementView(APIView): # (환경단체): 업사이클링 업체 등록 관리 (조회, 삭제)
+class MypageUpcyclingCompanyManagementView(APIView): # (환경단체): 업사이클링 업체 등록 관리 (전체 조회)
 
-    def get(self, request, registrant_id):
-        registrant = get_object_or_404(UpcyclingCompany, id=registrant_id)
-        serializer = UpcyclingCompanyManagementSerializer(registrant)
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        upcyclingcompany = user.upcyclingcompany_registrant.all()
+        serializer = UpcyclingCompanyManagementSerializer(upcyclingcompany, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def delete(self, request, registrant_id):
-        registrant = get_object_or_404(UpcyclingCompany, id=registrant_id)
-        if request.user == registrant.registrant:
-            registrant.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+
+class MypageUpcyclingCompanyManagementDetailView(APIView): # (환경단체): 업사이클링 업체 등록 관리 (개별 조회, 삭제)
+
+    def get(self, request, user_id, upcyclingcompany_id):
+        user = get_object_or_404(User, id=user_id)
+        upcyclingcompany = user.upcyclingcompany_registrant.get(id=upcyclingcompany_id)
+        print(upcyclingcompany)
+        serializer = UpcyclingCompanyManagementSerializer(upcyclingcompany)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def delete(self, request, user_id, upcyclingcompany_id):
+        user = get_object_or_404(User, id=user_id)
+        upcyclingcompany = user.upcyclingcompany_registrant.get(id=upcyclingcompany_id)
+        if request.user == upcyclingcompany.registrant:
+            upcyclingcompany.delete()
+            return Response({"msg":"해당 업사이클링 업체가 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"msg":"권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
