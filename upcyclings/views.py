@@ -1,12 +1,15 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+
 from rest_framework.generics import get_object_or_404 
 from .models import UpcyclingCompany
 from .serializers import UpcyclingCompanyListSerializer, UpcyclingCompanySerializer, UpcyclingCompanyEnrollSerializer
 
 
 class UpcyclingCompanyListView(APIView): # 전체 업사이클링 업체 조회
+    permission_classes = [AllowAny]
 
     def get(self, request):
         upcyclingcompany = UpcyclingCompany.objects.all()
@@ -15,6 +18,7 @@ class UpcyclingCompanyListView(APIView): # 전체 업사이클링 업체 조회
 
 
 class UpcyclingCompanyDetailView(APIView): # 해당 업사이클링 업체 상세 페이지 (조회, 수정, 삭제)
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, upcyclingcompany_id):
         upcyclingcompany = get_object_or_404(UpcyclingCompany, id=upcyclingcompany_id)

@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
@@ -14,12 +13,14 @@ from .serializers import (
 from ecoprograms.models import Ecoprogram, EcoprogramApply
 from upcyclings.models import UpcyclingCompany
 from upcyclings.serializers import UpcyclingCompanyManagementSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 
 
 # 회원가입(소비자)
 
 class SignUpConsumerView(APIView):
-
+    permission_classes = [AllowAny]
+    
     def post(self, request):
         serializer = SignUpConsumerSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -32,6 +33,7 @@ class SignUpConsumerView(APIView):
 # 회원가입(환경단체)
 
 class SignUpOrganizationView(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = SignUpOrganizationSerializer(data=request.data)

@@ -1,15 +1,26 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import generics
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import get_object_or_404 
 from .models import Ecoprogram, Review, EcoprogramApply
 from .serializers import (EcoprogramReviewSerializer, EcoprogramReviewCreateSerializer, EcoprogramSerializer,
                         EcoprogramListSerializer, EcoprogramEnrollSerializer, EcoprogramEditSerializer, EcoprogramReviewEditSerializer)
 
 
+
 # 에코프로그램 리뷰 
 
-class EcoprogramReviewView(APIView): # 리뷰 전체 (조회)
+class EcoprogramReviewPagination(PageNumberPagination): # 에코프로그램 리뷰 페이지네이션
+    page_size = 10
+    page_query_param = 'page_size'
+
+
+class EcoprogramReviewView(generics.ListAPIView): # 에코프로그램 리뷰 전체 (조회)
+    permission_classes = [AllowAny]
+    pagination_class = EcoprogramReviewPagination
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
@@ -18,7 +29,7 @@ class EcoprogramReviewView(APIView): # 리뷰 전체 (조회)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EcoprogramReviewCreateView(APIView): # 리뷰 (등록)
+class EcoprogramReviewCreateView(APIView): # 에코프로그램 리뷰 (등록)
 
     def post(self, request, ecoprogram_id):
         serializer = EcoprogramReviewCreateSerializer(data=request.data)
@@ -29,7 +40,7 @@ class EcoprogramReviewCreateView(APIView): # 리뷰 (등록)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 (수정, 삭제)
+class EcoprogramReviewDetailView(APIView): # 에코프로그램 리뷰 (수정, 삭제)
     
     def put(self, request, ecoprogram_id, review_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
@@ -54,7 +65,13 @@ class EcoprogramReviewDetailView(APIView): # 작성한 리뷰 (수정, 삭제)
 
 # 에코프로그램
 
-class EcoproramView(APIView): # 전체 에코프로그램 (조회)
+class EcoprogramPagination(PageNumberPagination): # 에코프로그램 페이지네이션
+    page_size = 6
+
+
+class EcoproramView(APIView): # 에코프로그램 전체 (조회)
+    permission_classes = [AllowAny]
+    pagination_class = EcoprogramPagination
 
     def get(self, request):
         ecoprogram = Ecoprogram.objects.all()
@@ -74,6 +91,7 @@ class EcoprogramEnrollView(APIView): # 에코프로그램 (등록)
 
 
 class EcoprogramDetailView(APIView): # 해당 에코프로그램 상세 페이지 (조회, 수정, 삭제)
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
