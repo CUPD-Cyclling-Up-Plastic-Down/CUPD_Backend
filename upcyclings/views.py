@@ -2,18 +2,30 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
-
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import get_object_or_404 
 from .models import UpcyclingCompany
 from .serializers import UpcyclingCompanyListSerializer, UpcyclingCompanySerializer, UpcyclingCompanyEnrollSerializer
+from .pagination import PaginationHandlerMixin
 
 
-class UpcyclingCompanyListView(APIView): # 전체 업사이클링 업체 조회
+class UpcyclingCompanyListPagination(PageNumberPagination): # 에코프로그램 리뷰 페이지네이션
+    page_size = 10
+    page_query_param = 'page'
+
+
+class UpcyclingCompanyListView(APIView, PaginationHandlerMixin): # 전체 업사이클링 업체 조회
     permission_classes = [AllowAny]
+    pagination_class = UpcyclingCompanyListPagination
+    serializer_class = UpcyclingCompanyListSerializer
 
     def get(self, request):
         upcyclingcompany = UpcyclingCompany.objects.all()
-        serializer = UpcyclingCompanyListSerializer(upcyclingcompany, many=True)
+        page = self.paginate_queryset(upcyclingcompany)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = UpcyclingCompanyListSerializer(upcyclingcompany, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

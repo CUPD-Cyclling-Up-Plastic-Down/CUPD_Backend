@@ -8,6 +8,7 @@ from rest_framework.generics import get_object_or_404
 from .models import Ecoprogram, Review, EcoprogramApply
 from .serializers import (EcoprogramReviewSerializer, EcoprogramReviewCreateSerializer, EcoprogramSerializer,
                         EcoprogramListSerializer, EcoprogramEnrollSerializer, EcoprogramEditSerializer, EcoprogramReviewEditSerializer)
+from .pagination import PaginationHandlerMixin
 
 
 
@@ -15,17 +16,22 @@ from .serializers import (EcoprogramReviewSerializer, EcoprogramReviewCreateSeri
 
 class EcoprogramReviewPagination(PageNumberPagination): # 에코프로그램 리뷰 페이지네이션
     page_size = 10
-    page_query_param = 'page_size'
+    page_query_param = 'page'
 
 
-class EcoprogramReviewView(generics.ListAPIView): # 에코프로그램 리뷰 전체 (조회)
+class EcoprogramReviewView(APIView, PaginationHandlerMixin): # 에코프로그램 리뷰 전체 (조회)
     permission_classes = [AllowAny]
     pagination_class = EcoprogramReviewPagination
+    serializer_class = EcoprogramReviewSerializer
 
     def get(self, request, ecoprogram_id):
         ecoprogram = get_object_or_404(Ecoprogram, id=ecoprogram_id)
         review = ecoprogram.review_ecoprogram.all()
-        serializer = EcoprogramReviewSerializer(review, many=True)
+        page = self.paginate_queryset(review)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = EcoprogramReviewSerializer(review, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -67,15 +73,21 @@ class EcoprogramReviewDetailView(APIView): # 에코프로그램 리뷰 (수정, 
 
 class EcoprogramPagination(PageNumberPagination): # 에코프로그램 페이지네이션
     page_size = 6
+    page_query_param = 'page'
 
 
-class EcoproramView(APIView): # 에코프로그램 전체 (조회)
+class EcoproramView(APIView, PaginationHandlerMixin): # 에코프로그램 전체 (조회)
     permission_classes = [AllowAny]
     pagination_class = EcoprogramPagination
+    serializer_class = EcoprogramListSerializer
 
     def get(self, request):
         ecoprogram = Ecoprogram.objects.all()
-        serializer = EcoprogramListSerializer(ecoprogram, many=True)
+        page = self.paginate_queryset(ecoprogram)
+        if page is not None:
+            serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
+        else:
+            serializer = EcoprogramListSerializer(ecoprogram, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
