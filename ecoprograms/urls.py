@@ -2,7 +2,7 @@ from django.urls import path
 from ecoprograms import views
 
 urlpatterns = [
-    path('<int:ecoprogram_id>/review/', views.EcoprogramReviewView.as_view(), 
+    path('<int:ecoprogram_id>/review', views.EcoprogramReviewView.as_view(), 
         name='ecoprogram_review_view'), # 리뷰 전체 (조회)
 
     path('<int:ecoprogram_id>/review/create/', views.EcoprogramReviewCreateView.as_view(), 

@@ -20,3 +20,4 @@ class PaginationHandlerMixin(object):
     def get_paginated_response(self, data):
         assert self.paginator is not None
         return self.paginator.get_paginated_response(data)
+    

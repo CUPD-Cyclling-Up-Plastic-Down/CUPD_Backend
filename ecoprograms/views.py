@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -76,19 +77,25 @@ class EcoprogramPagination(PageNumberPagination): # 에코프로그램 페이지
     page_query_param = 'page'
 
 
-class EcoproramView(APIView, PaginationHandlerMixin): # 에코프로그램 전체 (조회)
+class EcoproramView(APIView,PaginationHandlerMixin): # 에코프로그램 전체 (조회)
     permission_classes = [AllowAny]
     pagination_class = EcoprogramPagination
     serializer_class = EcoprogramListSerializer
+    queryset = Ecoprogram.objects.all().order_by('-created_at')
 
     def get(self, request):
-        ecoprogram = Ecoprogram.objects.all()
-        page = self.paginate_queryset(ecoprogram)
+        sort = request.GET.get('sort','')
+        if sort == 'likes':
+            self.queryset = Ecoprogram.objects.all().annotate(likes_count=Count('likes')).order_by('-likes_count')
+        elif sort == 'views':
+            self.queryset = Ecoprogram.objects.all().order_by('-views')
+    
+        page = self.paginate_queryset(self.queryset)
         if page is not None:
             serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
         else:
-            serializer = EcoprogramListSerializer(ecoprogram, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer = EcoprogramListSerializer(page, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)   # return self.get_paginated_response(serializer.data)  # (참고) if-else문을 써도 되고 if-else 지우고 주석처리한 코드를 사용해도 무방
 
 
 class EcoprogramEnrollView(APIView): # 에코프로그램 (등록)

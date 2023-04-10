@@ -18,6 +18,10 @@ class UpcyclingCompany(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     contact_number_regex = RegexValidator(regex = r'^0([2|31|32|33|41|42|43|44|51|52|53|54|55|61|62|63|64]?)-?([0-9]{3,4})-?([0-9]{4})')
     contact_number = models.CharField(validators=[contact_number_regex], max_length=11, unique=True)
+    likes = models.ManyToManyField(User, related_name='upcyclingcompany_likes', blank=True)
+    views = models.BigIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.company)

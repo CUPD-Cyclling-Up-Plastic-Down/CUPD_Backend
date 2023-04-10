@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,7 +10,7 @@ from .serializers import UpcyclingCompanyListSerializer, UpcyclingCompanySeriali
 from .pagination import PaginationHandlerMixin
 
 
-class UpcyclingCompanyListPagination(PageNumberPagination): # 에코프로그램 리뷰 페이지네이션
+class UpcyclingCompanyListPagination(PageNumberPagination): # 업사이클링 업체 리스트 페이지네이션
     page_size = 10
     page_query_param = 'page'
 
@@ -18,17 +19,23 @@ class UpcyclingCompanyListView(APIView, PaginationHandlerMixin): # 전체 업사
     permission_classes = [AllowAny]
     pagination_class = UpcyclingCompanyListPagination
     serializer_class = UpcyclingCompanyListSerializer
-
+    queryset = UpcyclingCompany.objects.all().order_by('-created_at')
+    
     def get(self, request):
-        upcyclingcompany = UpcyclingCompany.objects.all()
-        page = self.paginate_queryset(upcyclingcompany)
+        sort = request.GET.get('sort','')
+        if sort == 'likes':
+            self.queryset = UpcyclingCompany.objects.all().annotate(likes_count=Count('likes')).order_by('-likes_count')
+        elif sort == 'views':
+            self.queryset = UpcyclingCompany.objects.all().order_by('-views')
+            
+        page = self.paginate_queryset(self.queryset)
         if page is not None:
             serializer = self.get_paginated_response(self.serializer_class(page, many=True).data)
         else:
-            serializer = UpcyclingCompanyListSerializer(upcyclingcompany, many=True)
+            serializer = UpcyclingCompanyListSerializer(page, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
+    
+    
 class UpcyclingCompanyDetailView(APIView): # 해당 업사이클링 업체 상세 페이지 (조회, 수정, 삭제)
     permission_classes = [IsAuthenticatedOrReadOnly]
 
