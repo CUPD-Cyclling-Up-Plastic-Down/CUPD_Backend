@@ -1,8 +1,10 @@
 from django.db.models import Count
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
+from rest_framework import filters
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.generics import get_object_or_404 
@@ -77,11 +79,13 @@ class EcoprogramPagination(PageNumberPagination): # 에코프로그램 페이지
     page_query_param = 'page'
 
 
-class EcoproramView(APIView,PaginationHandlerMixin): # 에코프로그램 전체 (조회)
+class EcoproramView(ModelViewSet, PaginationHandlerMixin): # 에코프로그램 전체 (조회)
     permission_classes = [AllowAny]
     pagination_class = EcoprogramPagination
     serializer_class = EcoprogramListSerializer
     queryset = Ecoprogram.objects.all().order_by('-created_at')
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['id','title','content','organization',]
 
     def get(self, request):
         sort = request.GET.get('sort','')
@@ -122,7 +126,7 @@ class EcoprogramDetailView(APIView): # 해당 에코프로그램 상세 페이�
         if request.user == ecoprogram.host:
             serializer = EcoprogramEditSerializer(ecoprogram, data=request.data)
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(host=request.user)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -167,3 +171,6 @@ class EcoprogramDetailApplyView(APIView): # 해당 프로그램 상세 페이지
             else:
                 EcoprogramApply.objects.create(guest=request.user, ecoprogram=ecoprogram, result='WAITING')
                 return Response({"msg":"에코프로그램 신청을 접수했습니다."}, status=status.HTTP_200_OK)
+            
+
+

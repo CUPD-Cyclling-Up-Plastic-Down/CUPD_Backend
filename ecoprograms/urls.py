@@ -11,7 +11,7 @@ urlpatterns = [
     path('<int:ecoprogram_id>/review/<int:review_id>/', views.EcoprogramReviewDetailView.as_view(), 
         name='ecoprogram_review_detail_view'), # 작성한 리뷰 (수정, 삭제)
 
-    path('', views.EcoproramView.as_view(), 
+    path('', views.EcoproramView.as_view({'get': 'list'}), 
         name='ecoprogram_view'), # 전체 에코프로그램 (조회)
     
     path('<int:ecoprogram_id>/', views.EcoprogramDetailView.as_view(), 

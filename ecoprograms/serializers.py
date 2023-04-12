@@ -122,7 +122,7 @@ class EcoprogramEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ecoprogram
-        fields = ("host", "ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2", "organization")
+        fields = ("ecoprogram_image", "title", "introduce", "cost", "due_date", "max_guest", "location", "address2", "organization")
 
 
 # 에코프로그램 신청 결과

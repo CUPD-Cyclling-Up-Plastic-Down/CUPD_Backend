@@ -2,7 +2,7 @@ from django.urls import path
 from upcyclings import views
 
 urlpatterns = [
-    path('', views.UpcyclingCompanyListView.as_view(), 
+    path('', views.UpcyclingCompanyListView.as_view({'get': 'list'}), 
         name='upcycling_company_list_view'), # 전체 업사이클링 업체 리스트 조회
 
     path('<int:upcyclingcompany_id>/', views.UpcyclingCompanyDetailView.as_view(), 
